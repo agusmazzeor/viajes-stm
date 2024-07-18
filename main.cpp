@@ -16,7 +16,7 @@ struct StopData
     double avg_speed;
 };
 
-void load_data(const string &filename, vector<StopData> &data)
+void load_chunk_data(const string &filename, vector<StopData> &data, int start, int count)
 {
     ifstream file(filename);
     string line;
@@ -24,24 +24,33 @@ void load_data(const string &filename, vector<StopData> &data)
     // Ignorar la primera línea del encabezado
     if (getline(file, line))
     {
-        // Leer cada línea del archivo CSV
-        while (getline(file, line))
+        // Avanzar hasta el inicio del chunk
+        for (int i = 0; i < start; ++i)
         {
-            stringstream ss(line);
-            StopData stop_data;
-            string temp;
+            getline(file, line);
+        }
 
-            // Leer los campos de cada línea
-            getline(ss, stop_data.stop_id, ',');
-            getline(ss, temp, ',');
-            stop_data.theoretical_time = stod(temp);
-            getline(ss, temp, ',');
-            stop_data.actual_time = stod(temp);
-            getline(ss, temp, ',');
-            stop_data.avg_speed = stod(temp);
+        // Leer las líneas del chunk
+        for (int i = 0; i < count; ++i)
+        {
+            if (getline(file, line))
+            {
+                stringstream ss(line);
+                StopData stop_data;
+                string temp;
 
-            // Agregar los datos al vector
-            data.push_back(stop_data);
+                // Leer los campos de cada línea
+                getline(ss, stop_data.stop_id, ',');
+                getline(ss, temp, ',');
+                stop_data.theoretical_time = stod(temp);
+                getline(ss, temp, ',');
+                stop_data.actual_time = stod(temp);
+                getline(ss, temp, ',');
+                stop_data.avg_speed = stod(temp);
+
+                // Agregar los datos al vector
+                data.push_back(stop_data);
+            }
         }
     }
 }
@@ -85,16 +94,26 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    vector<StopData> data;
     const string filename = "stop_data.csv";
 
     if (rank == 0)
     {
-        // Proceso Master
-        load_data(filename, data);
+        // Master process
+        ifstream file(filename);
+        string line;
+        int total_lines = 0;
 
-        int chunk_size = data.size() / (size - 1);
-        int remainder = data.size() % (size - 1);
+        // Contar el número total de líneas (excluyendo el encabezado)
+        if (getline(file, line))
+        {
+            while (getline(file, line))
+            {
+                ++total_lines;
+            }
+        }
+
+        int chunk_size = total_lines / (size - 1);
+        int remainder = total_lines % (size - 1);
 
         for (int i = 1; i < size; ++i)
         {
@@ -104,8 +123,8 @@ int main(int argc, char *argv[])
                 end += remainder; // El ultimo chunk incluye el remanente
 
             int count = end - start;
+            MPI_Send(&start, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
             MPI_Send(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
-            MPI_Send(data.data() + start, count * sizeof(StopData), MPI_BYTE, i, 0, MPI_COMM_WORLD);
         }
 
         // Obtener los resultados de los esclavos
@@ -135,11 +154,12 @@ int main(int argc, char *argv[])
     else
     {
         // Proceso esclavo
-        int chunk_size;
-        MPI_Recv(&chunk_size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        int start, count;
+        MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-        vector<StopData> slave_data(chunk_size);
-        MPI_Recv(slave_data.data(), chunk_size * sizeof(StopData), MPI_BYTE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        vector<StopData> slave_data;
+        load_chunk_data(filename, slave_data, start, count);
 
         unordered_map<string, double> slave_delay_map;
         for (const auto &stop : slave_data)
