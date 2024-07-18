@@ -21,12 +21,28 @@ void load_data(const string &filename, vector<StopData> &data)
     ifstream file(filename);
     string line;
 
-    while (getline(file, line))
+    // Ignorar la primera linea del encabezado
+    if (getline(file, line))
     {
-        stringstream ss(line);
-        StopData stop_data;
-        ss >> stop_data.stop_id >> stop_data.theoretical_time >> stop_data.actual_time >> stop_data.avg_speed;
-        data.push_back(stop_data);
+        // Leer cada línea del archivo CSV
+        while (getline(file, line))
+        {
+            stringstream ss(line);
+            StopData stop_data;
+            string temp;
+
+            // Leer los campos de cada línea
+            getline(ss, stop_data.stop_id, ',');
+            getline(ss, temp, ',');
+            stop_data.theoretical_time = stod(temp);
+            getline(ss, temp, ',');
+            stop_data.actual_time = stod(temp);
+            getline(ss, temp, ',');
+            stop_data.avg_speed = stod(temp);
+
+            // Agregar los datos al vector
+            data.push_back(stop_data);
+        }
     }
 }
 
