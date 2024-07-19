@@ -6,36 +6,12 @@
 #include <sstream>
 #include <unordered_map>
 #include <map>
+#include "types.h"
+// #include "calcular_horarios.h"
 
 using namespace std;
 
-// Definición de la estructura para la información de los horarios teóricos de una parada
-struct HorarioTeorico
-{
-    int delay;
-    int cantidad_boletos_vendidos;
-    int pos_recorrido;
-    string horario;
-    bool arranco_dia_anterior;
-};
-
-// Definición de los tipos de datos anidados
-using ParadaMap = map<string, HorarioTeorico>; // clave: id_parada
-using RecorridoMap = map<string, ParadaMap>;   // clave: id_recorrido
-using TipoDiaMap = map<string, RecorridoMap>;  // clave: id_tipo_dia
-using LineaMap = map<string, TipoDiaMap>;      // clave: linea
-// lista_horarios_teoricos_parada[linea][id_tipo_dia][id_recorrido][id_parada] = [delay,cantidad_boletos_vendidos,pos_recorrido,horario,arranco_dia_aterior]
-
-struct DataViaje
-{
-    string fecha_evento; // horario
-    string cantidad_pasajeros;
-    string codigo_parada_origen; // codigo de la parada de ascenso
-    string cod_empresa;          // codigo empresa a la cual pertenece el omnibus
-    string linea_codigo;         // codigo de la linea
-    string dsc_linea;            // nombre publico de la linea
-    string sevar_codigo;         // codigo de la variante
-};
+const string HORARIOS_POR_PARADA = "horarios_por_parada.csv";
 
 // Función para dividir una cadena en partes, dado un delimitador
 vector<string> split(const string &s, char delimiter)
@@ -53,7 +29,7 @@ vector<string> split(const string &s, char delimiter)
 // Función para procesar los horarios teóricos
 LineaMap procesar_horarios_teoricos()
 {
-    string ruta_archivo_horarios_teoricos = "horarios_por_parada.csv";
+    string ruta_archivo_horarios_teoricos = HORARIOS_POR_PARADA;
     LineaMap lista_horarios_teoricos_parada;
     vector<string> lineas_a_evaluar = {"8870", "1111", "8872"};
 
@@ -97,14 +73,6 @@ LineaMap procesar_horarios_teoricos()
     archivo_horarios_teoricos.close();
     return lista_horarios_teoricos_parada;
 }
-
-struct StopData
-{
-    string stop_id;
-    double theoretical_time;
-    double actual_time;
-    double avg_speed;
-};
 
 void load_chunk_data(const string &filename, vector<DataViaje> &data, int start, int count, const LineaMap &horarios_teoricos)
 {
