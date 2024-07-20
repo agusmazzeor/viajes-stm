@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+datos/horarios_teoricos/horarios_por_parada.csv
+datos/paradas/paradas.csv
+datos/puntos_de_control/puntos_de_control.csv
+datos/viajes/viajes_stm_052024.csv
+datos/recorridos_bus.csv
+datos/uptu_pasada_circular.csv
+datos/uptu_pasada_circular.zip
+bin/main
