@@ -32,7 +32,7 @@ void load_chunk_data(const string &filename, vector<DataViaje> &data, int start,
         {
             if (getline(file, line))
             {
-                vector<string> tokens = split(line, ';');
+                vector<string> tokens = split(line, ',');
                 DataViaje viaje;
 
                 viaje.fecha_evento = tokens[2];
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    const string filename = "datos_dummy/05_2024_viajes.csv";
+    const string datos_viajes = "datos_dummy/05_2024_viajes.csv";
 
     if (rank == 0)
     {
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
             MPI_Send(serialized_schedule.data(), schedule_size, MPI_CHAR, i, 0, MPI_COMM_WORLD);
         }
 
-        ifstream file(filename);
+        ifstream file(datos_viajes);
         string line;
         int total_lines = 0;
 
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
         MPI_Recv(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
         vector<DataViaje> slave_data;
-        load_chunk_data(filename, slave_data, start, count, lista_horarios_teoricos_parada);
+        load_chunk_data(datos_viajes, slave_data, start, count, lista_horarios_teoricos_parada);
 
         print_data_viaje(slave_data);
 
