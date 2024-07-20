@@ -1,6 +1,7 @@
-Para compilar y ejecutar con 4 procesos:
+Para limpiar el proyecto (asegurarse de que no hay archivos antiguos),compilar el programa y ejecutarlo (ej. con 4 nodos):
 
 ```
-mpic++ -std=c++11 -o main main.cpp
-mpirun -np 4 ./main
+make clean
+make
+mpirun -np 4 ./bin/main
 ```
