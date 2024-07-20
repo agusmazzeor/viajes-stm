@@ -9,5 +9,6 @@
 using namespace std;
 
 LineaMap procesar_horarios_teoricos(string linea_omnibus);
+int obtener_dia_semana(const string &horario_real);
 
 #endif // CALCULAR_HORARIOS_H

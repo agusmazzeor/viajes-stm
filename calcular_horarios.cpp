@@ -32,7 +32,6 @@ vector<string> obtener_variantes_de_linea(string linea)
 	archivo_paradas.close();
 	return variantes_de_linea;
 };
-// {"8870", "1111", "8872"}
 
 // Función para procesar los horarios teóricos
 LineaMap procesar_horarios_teoricos(string linea_omnibus)
@@ -80,4 +79,33 @@ LineaMap procesar_horarios_teoricos(string linea_omnibus)
 
 	archivo_horarios_teoricos.close();
 	return lista_horarios_teoricos_parada;
+};
+
+int obtener_dia_semana(const string &horario_real)
+{
+	// Definir el formato de la fecha
+	const string formato_fecha = "%Y-%m-%dT%H:%M:%S";
+
+	// Convertir la cadena de fecha a un objeto tm
+	tm fecha_completa = {};
+	istringstream ss(horario_real);
+	ss >> get_time(&fecha_completa, formato_fecha.c_str());
+
+	// Calcular el día de la semana (0 = domingo, 1 = lunes, ..., 6 = sábado)
+	mktime(&fecha_completa);
+	int dia_numero = fecha_completa.tm_wday;
+
+	// Determinar el tipo de día
+	if (dia_numero == 0)
+	{
+		return 3; // Domingo
+	}
+	else if (dia_numero == 6)
+	{
+		return 2; // Sábado
+	}
+	else
+	{
+		return 1; // Día hábil
+	}
 };
