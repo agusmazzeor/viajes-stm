@@ -8,6 +8,6 @@
 
 using namespace std;
 
-LineaMap procesar_horarios_teoricos();
+LineaMap procesar_horarios_teoricos(string linea_omnibus);
 
 #endif // CALCULAR_HORARIOS_H

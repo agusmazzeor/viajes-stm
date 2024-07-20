@@ -13,6 +13,8 @@
 
 using namespace std;
 
+const string LINEA_OMNIBUS = "144";
+
 void load_chunk_data(const string &filename, vector<DataViaje> &data, int start, int count, const LineaMap &horarios_teoricos)
 {
     ifstream file(filename);
@@ -73,7 +75,7 @@ int main(int argc, char *argv[])
     if (rank == 0)
     {
         // Master process
-        LineaMap lista_horarios_teoricos_parada = procesar_horarios_teoricos();
+        LineaMap lista_horarios_teoricos_parada = procesar_horarios_teoricos(LINEA_OMNIBUS);
 
         // Serializar el mapa
         string serialized_schedule;

@@ -35,11 +35,11 @@ vector<string> obtener_variantes_de_linea(string linea)
 // {"8870", "1111", "8872"}
 
 // Función para procesar los horarios teóricos
-LineaMap procesar_horarios_teoricos()
+LineaMap procesar_horarios_teoricos(string linea_omnibus)
 {
 	string ruta_archivo_horarios_teoricos = HORARIOS_POR_PARADA;
 	LineaMap lista_horarios_teoricos_parada;
-	vector<string> lineas_a_evaluar = obtener_variantes_de_linea("144");
+	vector<string> vars_de_linea_a_evaluar = obtener_variantes_de_linea(linea_omnibus);
 
 	ifstream archivo_horarios_teoricos(ruta_archivo_horarios_teoricos);
 	if (!archivo_horarios_teoricos.is_open())
@@ -57,8 +57,8 @@ LineaMap procesar_horarios_teoricos()
 			continue; // Saltar líneas mal formateadas
 		}
 
-		string linea = horario_teorico[1]; // cod_variante
-		if (find(lineas_a_evaluar.begin(), lineas_a_evaluar.end(), linea) != lineas_a_evaluar.end())
+		string variante = horario_teorico[1]; // cod_variante
+		if (find(vars_de_linea_a_evaluar.begin(), vars_de_linea_a_evaluar.end(), variante) != vars_de_linea_a_evaluar.end())
 		{
 			string id_tipo_dia = horario_teorico[0];							 // tipo_dia
 			string id_recorrido = horario_teorico[2];							 // frecuencia
@@ -74,7 +74,7 @@ LineaMap procesar_horarios_teoricos()
 			ht.horario = horario;
 			ht.arranco_dia_anterior = arranco_dia_anterior;
 
-			lista_horarios_teoricos_parada[linea][id_tipo_dia][id_recorrido][id_parada] = ht;
+			lista_horarios_teoricos_parada[variante][id_tipo_dia][id_recorrido][id_parada] = ht;
 		}
 	}
 
