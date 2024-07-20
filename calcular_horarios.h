@@ -1,8 +1,13 @@
 #ifndef CALCULAR_HORARIOS_H
 #define CALCULAR_HORARIOS_H
-#include "types.h"
 
-vector<string> split(const string &s, char delimiter);
+#include <string>
+#include <vector>
+#include "types.h"
+#include "funciones_auxiliares.h"
+
+using namespace std;
+
 LineaMap procesar_horarios_teoricos();
 
 #endif // CALCULAR_HORARIOS_H
