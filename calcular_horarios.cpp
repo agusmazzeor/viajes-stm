@@ -112,7 +112,6 @@ int obtener_dia_semana(const string &horario_real)
 
 string convertir_fecha_a_hmm(const string &fecha_hora)
 {
-	cout << "  convertir fecha: " << fecha_hora << endl;
 	const string formato_fecha = "%Y-%m-%d %H:%M:%S";
 	tm fecha_completa = {};
 	istringstream ss(fecha_hora);
@@ -120,11 +119,8 @@ string convertir_fecha_a_hmm(const string &fecha_hora)
 
 	int horas = fecha_completa.tm_hour;
 	int minutos = fecha_completa.tm_min;
-	cout << "    horas: " << horas << endl;
-	cout << "    minutos: " << minutos << endl;
 	ostringstream oss;
 	oss << horas << setfill('0') << setw(2) << minutos;
-	cout << "    resultado: " << oss.str() << endl;
 	return oss.str();
 }
 
@@ -154,13 +150,8 @@ string encontrar_recorrido_del_viaje(const DataViaje &v, const LineaMap &horario
 		const string &id_recorrido = it.first;
 		const HorarioTeorico &horario_teorico = it.second;
 
-		cout << "Evaluando recorrido: " << id_recorrido << endl;
-
 		int horario_teorico_hmm = stoi(horario_teorico.horario);
 		int horario_viaje_int = stoi(horario_viaje_hmm);
-
-		cout << "Horario teorico: " << horario_teorico.horario << endl;
-		cout << "Horario viaje:   " << horario_viaje_hmm << endl;
 
 		if (horario_teorico_hmm <= horario_viaje_int)
 		{
@@ -171,13 +162,7 @@ string encontrar_recorrido_del_viaje(const DataViaje &v, const LineaMap &horario
 				nearest_recorrido = id_recorrido;
 			}
 		}
-		else
-		{
-			cout << "El horario del recorrido es mayor" << endl;
-		}
 	}
 
-	cout << "Nearest recorrido: " << nearest_recorrido << endl;
-	cout << "------------------------" << endl;
 	return nearest_recorrido;
 }
