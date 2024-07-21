@@ -21,13 +21,13 @@ void print_data_linea(LineaMap &lista_horarios_teoricos_parada)
 		for (const auto &tipo_dia : linea.second)
 		{
 			cout << "  Tipo de día: " << tipo_dia.first << endl;
-			for (const auto &recorrido : tipo_dia.second)
+			for (const auto &parada : tipo_dia.second)
 			{
-				cout << "    Recorrido: " << recorrido.first << endl;
-				for (const auto &parada : recorrido.second)
+				cout << "    Parada: " << parada.first << endl;
+				for (const auto &recorrido : parada.second)
 				{
-					const HorarioTeorico &ht = parada.second;
-					cout << "      Parada: " << parada.first << endl;
+					const HorarioTeorico &ht = recorrido.second;
+					cout << "      Recorrido: " << recorrido.first << endl;
 					cout << "        Delay: " << ht.delay << endl;
 					cout << "        Boletos vendidos: " << ht.cantidad_boletos_vendidos << endl;
 					cout << "        Pos recorrido: " << ht.pos_recorrido << endl;

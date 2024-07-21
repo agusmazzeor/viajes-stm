@@ -33,12 +33,12 @@ void serialize_horarios_teoricos(const LineaMap &schedule, string &output)
 	{
 		for (const auto &id_tipo_dia : linea.second)
 		{
-			for (const auto &id_recorrido : id_tipo_dia.second)
+			for (const auto &id_parada : id_tipo_dia.second)
 			{
-				for (const auto &id_parada : id_recorrido.second)
+				for (const auto &id_recorrido : id_parada.second)
 				{
-					const HorarioTeorico &ht = id_parada.second;
-					ss << linea.first << "," << id_tipo_dia.first << "," << id_recorrido.first << "," << id_parada.first << ","
+					const HorarioTeorico &ht = id_recorrido.second;
+					ss << linea.first << "," << id_tipo_dia.first << "," << id_parada.first << "," << id_recorrido.first << ","
 						 << ht.delay << "," << ht.cantidad_boletos_vendidos << "," << ht.pos_recorrido << ","
 						 << ht.horario << "," << ht.arranco_dia_anterior << "\n";
 				}

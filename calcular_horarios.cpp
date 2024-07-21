@@ -73,7 +73,7 @@ LineaMap procesar_horarios_teoricos(string linea_omnibus)
 			ht.horario = horario;
 			ht.arranco_dia_anterior = arranco_dia_anterior;
 
-			lista_horarios_teoricos_parada[variante][id_tipo_dia][id_recorrido][id_parada] = ht;
+			lista_horarios_teoricos_parada[variante][id_tipo_dia][id_parada][id_recorrido] = ht;
 		}
 	}
 
