@@ -47,10 +47,9 @@ void load_chunk_data(const string &filename, vector<DataViaje> &data, int start,
           viaje.cod_empresa = tokens[12];
           viaje.linea_codigo = tokens[14];
           viaje.dsc_linea = tokens[15];
-          viaje.recorrido = encontrar_recorrido_del_viaje(viaje, horarios_linea);
+          encontrar_recorrido_y_calcular_delay(viaje, horarios_linea);
           if (!viaje.recorrido.empty())
           {
-            viaje.delay = calcular_delay(viaje, horarios_linea);
             data.push_back(viaje);
           }
         }
