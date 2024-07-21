@@ -2,6 +2,8 @@
 
 const string HORARIOS_POR_PARADA = "datos_dummy/horarios_por_parada.csv";
 const string PARADAS = "datos_dummy/paradas.csv";
+// const string HORARIOS_POR_PARADA = "datos/horarios_teoricos/horarios_por_parada.csv";
+// const string PARADAS = "datos/paradas/paradas.csv";
 
 vector<string> obtener_variantes_de_linea(string linea)
 {
@@ -126,8 +128,32 @@ string convertir_fecha_a_hmm(const string &fecha_hora)
 
 int convertir_hmm_a_minutos(const string &horario_hmm)
 {
-	int horas = stoi(horario_hmm.substr(0, horario_hmm.size() - 2));
-	int minutos = stoi(horario_hmm.substr(horario_hmm.size() - 2));
+	int horas = 0, minutos = 0;
+
+	switch (horario_hmm.length())
+	{
+	case 1:
+		// Ejemplo: "1" -> 00:01
+		minutos = stoi(horario_hmm.substr(0, 1));
+		break;
+	case 2:
+		// Ejemplo: "12" -> 00:12
+		minutos = stoi(horario_hmm.substr(0, 2));
+		break;
+	case 3:
+		// Ejemplo: "824" -> 08:24
+		horas = stoi(horario_hmm.substr(0, 1));
+		minutos = stoi(horario_hmm.substr(1, 2));
+		break;
+	case 4:
+		// Ejemplo: "1324" -> 13:24
+		horas = stoi(horario_hmm.substr(0, 2));
+		minutos = stoi(horario_hmm.substr(2, 2));
+		break;
+	default:
+		throw out_of_range("La cadena de entrada no tiene el formato esperado: " + horario_hmm);
+	}
+
 	return horas * 60 + minutos;
 }
 
@@ -157,22 +183,32 @@ void encontrar_recorrido_y_calcular_delay(DataViaje &v, const LineaMap &horarios
 		const string &id_recorrido = it.first;
 		const HorarioTeorico &horario_teorico = it.second;
 
-		int horario_viaje_minutos = convertir_hmm_a_minutos(horario_viaje_hmm);
-		int horario_teorico_minutos = convertir_hmm_a_minutos(horario_teorico.horario);
-
-		if (horario_teorico_minutos <= horario_viaje_minutos)
+		try
 		{
-			int diff = horario_viaje_minutos - horario_teorico_minutos;
-			if (diff < min_diff)
+			int horario_viaje_minutos = convertir_hmm_a_minutos(horario_viaje_hmm);
+			int horario_teorico_minutos = convertir_hmm_a_minutos(horario_teorico.horario);
+
+			if (horario_teorico_minutos <= horario_viaje_minutos)
 			{
-				min_diff = diff;
-				nearest_recorrido = id_recorrido;
+				int diff = horario_viaje_minutos - horario_teorico_minutos;
+				if (diff < min_diff)
+				{
+					min_diff = diff;
+					nearest_recorrido = id_recorrido;
+				}
 			}
+		}
+		catch (const out_of_range &e)
+		{
+			cerr << "Error al convertir horario a minutos: " << e.what() << endl;
 		}
 	}
 
-	v.recorrido = nearest_recorrido;
-	v.delay = min_diff;
+	if (!nearest_recorrido.empty())
+	{
+		v.recorrido = nearest_recorrido;
+		v.delay = min_diff;
+	}
 }
 
 void procesar_viajes(const string &filename, vector<DataViaje> &data, int start, int count, const LineaMap &horarios_linea)

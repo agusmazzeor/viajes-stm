@@ -17,6 +17,7 @@ using namespace std::chrono;
 
 const string LINEA_OMNIBUS = "144";
 const string DATOS_VIAJES = "datos_dummy/05_2024_viajes.csv";
+// const string DATOS_VIAJES = "datos/viajes/viajes_stm_052024.csv";
 
 int main(int argc, char *argv[])
 {
@@ -74,7 +75,7 @@ int main(int argc, char *argv[])
       int start = (i - 1) * chunk_size;
       int end = start + chunk_size;
       if (i == size - 1)
-        end += remainder; // El ultimo chunk incluye el remanente
+        end += remainder; // El último chunk incluye el remanente
 
       int count = end - start;
       MPI_Send(&start, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
@@ -123,16 +124,17 @@ int main(int argc, char *argv[])
       }
     }
 
-    cout << "----------------------------" << endl;
-    cout << "Todos los viajes procesados:" << endl;
-    cout << "----------------------------" << endl;
-    print_data_viaje(all_viajes);
+    // cout << "----------------------------" << endl;
+    // cout << "Todos los viajes procesados:" << endl;
+    // cout << "----------------------------" << endl;
+    // print_data_viaje(all_viajes);
 
-    cout << "----------------------------" << endl;
-    cout << "Todas las lineas procesadas:" << endl;
-    cout << "----------------------------" << endl;
-    print_data_linea(lista_horarios_teoricos_parada);
+    // cout << "----------------------------" << endl;
+    // cout << "Todas las lineas procesadas:" << endl;
+    // cout << "----------------------------" << endl;
+    // print_data_linea(lista_horarios_teoricos_parada);
 
+    // Guardar `lista_horarios_teoricos_parada` en un archivo
     guardar_linea_map_en_archivo(lista_horarios_teoricos_parada, "resultado/retrasos_de_lineas.csv");
 
     // Parar el temporizador
@@ -170,7 +172,7 @@ int main(int argc, char *argv[])
     MPI_Send(&viajes_size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
     MPI_Send(viajes_serializados.data(), viajes_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
 
-    cout << "---> Termine proceso con rank: " << rank << ", con cantidad de viajes: " << viajes.size() << endl;
+    // cout << "---> Termine proceso con rank: " << rank << ", con cantidad de viajes: " << viajes.size() << endl;
   }
 
   MPI_Finalize();
