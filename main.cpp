@@ -15,7 +15,7 @@ using namespace std;
 
 const string LINEA_OMNIBUS = "144";
 
-void load_chunk_data(const string &filename, vector<DataViaje> &data, int start, int count, const LineaMap &horarios_linea)
+void procesar_viajes(const string &filename, vector<DataViaje> &data, int start, int count, const LineaMap &horarios_linea)
 {
   ifstream file(filename);
   string line;
@@ -74,22 +74,23 @@ int main(int argc, char *argv[])
     LineaMap lista_horarios_teoricos_parada = procesar_horarios_teoricos(LINEA_OMNIBUS);
 
     // Serializar el mapa
-    string serialized_schedule;
-    serialize_horarios_teoricos(lista_horarios_teoricos_parada, serialized_schedule);
+    string horarios_teoricos_serializados;
+    serialize_horarios_teoricos(lista_horarios_teoricos_parada, horarios_teoricos_serializados);
 
     // Enviar el tamaño del mapa serializado
-    int schedule_size = serialized_schedule.size();
+    int schedule_size = horarios_teoricos_serializados.size();
     for (int i = 1; i < size; ++i)
     {
       MPI_Send(&schedule_size, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
     }
 
-    // Enviar el mapa serializado
+    // Enviar el mapa serializado de los horarios teoricos
     for (int i = 1; i < size; ++i)
     {
-      MPI_Send(serialized_schedule.data(), schedule_size, MPI_CHAR, i, 0, MPI_COMM_WORLD);
+      MPI_Send(horarios_teoricos_serializados.data(), schedule_size, MPI_CHAR, i, 0, MPI_COMM_WORLD);
     }
 
+    // Calcular chunks para procesar los viajes en los procesos esclavos
     ifstream file(datos_viajes);
     string line;
     int total_lines = 0;
@@ -155,20 +156,20 @@ int main(int argc, char *argv[])
 
     // Deserializar el mapa
     LineaMap lista_horarios_teoricos_parada;
-    string serialized_schedule(buffer.begin(), buffer.end());
-    deserialize_horarios_teoricos(serialized_schedule, lista_horarios_teoricos_parada);
+    string horarios_teoricos_serializados(buffer.begin(), buffer.end());
+    deserialize_horarios_teoricos(horarios_teoricos_serializados, lista_horarios_teoricos_parada);
 
     int start, count;
     MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     MPI_Recv(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-    vector<DataViaje> slave_data;
-    load_chunk_data(datos_viajes, slave_data, start, count, lista_horarios_teoricos_parada);
+    vector<DataViaje> viajes;
+    procesar_viajes(datos_viajes, viajes, start, count, lista_horarios_teoricos_parada);
 
-    print_data_viaje(slave_data);
+    print_data_viaje(viajes);
 
     unordered_map<string, double> slave_delay_map;
-    for (const auto &viaje : slave_data)
+    for (const auto &viaje : viajes)
     {
       slave_delay_map[viaje.sevar_codigo] += viaje.delay;
     }
