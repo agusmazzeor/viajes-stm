@@ -15,7 +15,7 @@ using namespace std;
 
 const string LINEA_OMNIBUS = "144";
 
-void load_chunk_data(const string &filename, vector<DataViaje> &data, int start, int count, const LineaMap &horarios_teoricos)
+void load_chunk_data(const string &filename, vector<DataViaje> &data, int start, int count, const LineaMap &horarios_linea)
 {
     ifstream file(filename);
     string line;
@@ -39,7 +39,7 @@ void load_chunk_data(const string &filename, vector<DataViaje> &data, int start,
 
                 viaje.sevar_codigo = tokens[16];
                 // Agregar solo si sevar_codigo está en lineas_a_evaluar
-                if (horarios_teoricos.find(viaje.sevar_codigo) != horarios_teoricos.end())
+                if (horarios_linea.find(viaje.sevar_codigo) != horarios_linea.end())
                 {
                     viaje.fecha_evento = tokens[2];
                     viaje.cantidad_pasajeros = tokens[10];
@@ -47,20 +47,17 @@ void load_chunk_data(const string &filename, vector<DataViaje> &data, int start,
                     viaje.cod_empresa = tokens[12];
                     viaje.linea_codigo = tokens[14];
                     viaje.dsc_linea = tokens[15];
-                    viaje.recorrido = encontrar_recorrido_del_viaje(viaje, horarios_teoricos);
+                    viaje.recorrido = encontrar_recorrido_del_viaje(viaje, horarios_linea);
+                    if (!viaje.recorrido.empty())
+                    {
+                        viaje.delay = calcular_delay(viaje, horarios_linea);
+                    }
 
                     data.push_back(viaje);
                 }
             }
         }
     }
-}
-
-// TODO
-double calculate_delay(const DataViaje &data, const LineaMap &horarios_teoricos)
-{
-    // Aquí debes implementar la lógica para calcular el retraso basado en los horarios teóricos
-    return 0.0; // Retorna 0 si no se encuentra información correspondiente
 }
 
 int main(int argc, char *argv[])
@@ -175,8 +172,7 @@ int main(int argc, char *argv[])
         unordered_map<string, double> slave_delay_map;
         for (const auto &viaje : slave_data)
         {
-            double delay = calculate_delay(viaje, lista_horarios_teoricos_parada);
-            slave_delay_map[viaje.sevar_codigo] += delay;
+            slave_delay_map[viaje.sevar_codigo] += stoi(viaje.delay);
         }
 
         vector<char> buffer_out;

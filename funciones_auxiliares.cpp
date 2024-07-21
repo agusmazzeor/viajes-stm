@@ -51,6 +51,7 @@ void print_data_viaje(const vector<DataViaje> &data_viajes)
 		cout << "Descripción de la línea: " << viaje.dsc_linea << endl;
 		cout << "Código de variante (sevar_codigo): " << viaje.sevar_codigo << endl;
 		cout << "Recorrido omnibus: " << viaje.recorrido << endl;
+		cout << "Delay omnibus (minutos): " << viaje.delay << endl;
 		cout << "------------------------" << endl;
 	}
 }

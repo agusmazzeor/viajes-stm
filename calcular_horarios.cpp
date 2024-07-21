@@ -124,12 +124,12 @@ string convertir_fecha_a_hmm(const string &fecha_hora)
 	return oss.str();
 }
 
-string encontrar_recorrido_del_viaje(const DataViaje &v, const LineaMap &horarios_teoricos)
+string encontrar_recorrido_del_viaje(const DataViaje &v, const LineaMap &horarios_linea)
 {
 	int dia_semana = obtener_dia_semana(v.fecha_evento);
 
-	auto linea_it = horarios_teoricos.find(v.sevar_codigo);
-	if (linea_it == horarios_teoricos.end())
+	auto linea_it = horarios_linea.find(v.sevar_codigo);
+	if (linea_it == horarios_linea.end())
 		return "";
 
 	auto dia_it = linea_it->second.find(dia_semana);
@@ -166,3 +166,42 @@ string encontrar_recorrido_del_viaje(const DataViaje &v, const LineaMap &horario
 
 	return nearest_recorrido;
 }
+
+int convertir_hmm_a_minutos(const string &horario_hmm)
+{
+	int horas = stoi(horario_hmm.substr(0, horario_hmm.size() - 2));
+	int minutos = stoi(horario_hmm.substr(horario_hmm.size() - 2));
+	return horas * 60 + minutos;
+}
+
+string calcular_delay(const DataViaje &v, const LineaMap &horarios_linea)
+{
+	HorarioTeorico horario_teorico;
+	auto linea_it = horarios_linea.find(v.sevar_codigo);
+	if (linea_it != horarios_linea.end())
+	{
+		auto tipo_dia_it = linea_it->second.find(obtener_dia_semana(v.fecha_evento));
+		if (tipo_dia_it != linea_it->second.end())
+		{
+			auto parada_it = tipo_dia_it->second.find(v.codigo_parada_origen);
+			if (parada_it != tipo_dia_it->second.end())
+			{
+				auto recorrido_it = parada_it->second.find(v.recorrido);
+				if (recorrido_it != parada_it->second.end())
+				{
+					horario_teorico = recorrido_it->second;
+					if (!horario_teorico.horario.empty())
+					{
+						string horario_viaje_hmm = convertir_fecha_a_hmm(v.fecha_evento);
+						int horario_viaje_minutos = convertir_hmm_a_minutos(horario_viaje_hmm);
+						int horario_teorico_minutos = convertir_hmm_a_minutos(horario_teorico.horario);
+
+						int diff = horario_viaje_minutos - horario_teorico_minutos;
+						return to_string(diff);
+					}
+				}
+			}
+		}
+	}
+	return "";
+};
