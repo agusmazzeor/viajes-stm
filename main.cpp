@@ -37,17 +37,18 @@ void load_chunk_data(const string &filename, vector<DataViaje> &data, int start,
                 vector<string> tokens = split(line, ',');
                 DataViaje viaje;
 
-                viaje.fecha_evento = tokens[2];
-                viaje.cantidad_pasajeros = tokens[10];
-                viaje.codigo_parada_origen = tokens[11];
-                viaje.cod_empresa = tokens[12];
-                viaje.linea_codigo = tokens[14];
-                viaje.dsc_linea = tokens[15];
                 viaje.sevar_codigo = tokens[16];
-
                 // Agregar solo si sevar_codigo está en lineas_a_evaluar
                 if (horarios_teoricos.find(viaje.sevar_codigo) != horarios_teoricos.end())
                 {
+                    viaje.fecha_evento = tokens[2];
+                    viaje.cantidad_pasajeros = tokens[10];
+                    viaje.codigo_parada_origen = tokens[11];
+                    viaje.cod_empresa = tokens[12];
+                    viaje.linea_codigo = tokens[14];
+                    viaje.dsc_linea = tokens[15];
+                    viaje.recorrido = encontrar_recorrido_del_viaje(viaje, horarios_teoricos);
+
                     data.push_back(viaje);
                 }
             }

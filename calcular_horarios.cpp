@@ -109,3 +109,75 @@ int obtener_dia_semana(const string &horario_real)
 		return 1; // Día hábil
 	}
 };
+
+string convertir_fecha_a_hmm(const string &fecha_hora)
+{
+	cout << "  convertir fecha: " << fecha_hora << endl;
+	const string formato_fecha = "%Y-%m-%d %H:%M:%S";
+	tm fecha_completa = {};
+	istringstream ss(fecha_hora);
+	ss >> get_time(&fecha_completa, formato_fecha.c_str());
+
+	int horas = fecha_completa.tm_hour;
+	int minutos = fecha_completa.tm_min;
+	cout << "    horas: " << horas << endl;
+	cout << "    minutos: " << minutos << endl;
+	ostringstream oss;
+	oss << horas << setfill('0') << setw(2) << minutos;
+	cout << "    resultado: " << oss.str() << endl;
+	return oss.str();
+}
+
+string encontrar_recorrido_del_viaje(const DataViaje &v, const LineaMap &horarios_teoricos)
+{
+	int dia_semana = obtener_dia_semana(v.fecha_evento);
+
+	auto linea_it = horarios_teoricos.find(v.sevar_codigo);
+	if (linea_it == horarios_teoricos.end())
+		return "";
+
+	auto dia_it = linea_it->second.find(dia_semana);
+	if (dia_it == linea_it->second.end())
+		return "";
+
+	auto parada_it = dia_it->second.find(v.codigo_parada_origen);
+	if (parada_it == dia_it->second.end())
+		return "";
+
+	const auto &recorridos = parada_it->second;
+	string horario_viaje_hmm = convertir_fecha_a_hmm(v.fecha_evento);
+	string nearest_recorrido;
+	int min_diff = numeric_limits<int>::max();
+
+	for (const auto &it : recorridos)
+	{
+		const string &id_recorrido = it.first;
+		const HorarioTeorico &horario_teorico = it.second;
+
+		cout << "Evaluando recorrido: " << id_recorrido << endl;
+
+		int horario_teorico_hmm = stoi(horario_teorico.horario);
+		int horario_viaje_int = stoi(horario_viaje_hmm);
+
+		cout << "Horario teorico: " << horario_teorico.horario << endl;
+		cout << "Horario viaje:   " << horario_viaje_hmm << endl;
+
+		if (horario_teorico_hmm <= horario_viaje_int)
+		{
+			int diff = horario_viaje_int - horario_teorico_hmm;
+			if (diff < min_diff)
+			{
+				min_diff = diff;
+				nearest_recorrido = id_recorrido;
+			}
+		}
+		else
+		{
+			cout << "El horario del recorrido es mayor" << endl;
+		}
+	}
+
+	cout << "Nearest recorrido: " << nearest_recorrido << endl;
+	cout << "------------------------" << endl;
+	return nearest_recorrido;
+}
