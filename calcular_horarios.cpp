@@ -59,7 +59,7 @@ LineaMap procesar_horarios_teoricos(string linea_omnibus)
 		string variante = horario_teorico[1]; // cod_variante
 		if (find(vars_de_linea_a_evaluar.begin(), vars_de_linea_a_evaluar.end(), variante) != vars_de_linea_a_evaluar.end())
 		{
-			string id_tipo_dia = horario_teorico[0];							 // tipo_dia
+			int id_tipo_dia = stoi(horario_teorico[0]);						 // tipo_dia
 			string id_recorrido = horario_teorico[2];							 // frecuencia
 			string id_parada = horario_teorico[3];								 // cod_ubic_parada
 			int pos_recorrido = stoi(horario_teorico[4]);					 // ordinal

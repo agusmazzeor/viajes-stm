@@ -39,8 +39,8 @@ void serialize_horarios_teoricos(const LineaMap &schedule, string &output)
 				{
 					const HorarioTeorico &ht = id_parada.second;
 					ss << linea.first << "," << id_tipo_dia.first << "," << id_recorrido.first << "," << id_parada.first << ","
-					   << ht.delay << "," << ht.cantidad_boletos_vendidos << "," << ht.pos_recorrido << ","
-					   << ht.horario << "," << ht.arranco_dia_anterior << "\n";
+						 << ht.delay << "," << ht.cantidad_boletos_vendidos << "," << ht.pos_recorrido << ","
+						 << ht.horario << "," << ht.arranco_dia_anterior << "\n";
 				}
 			}
 		}
@@ -63,7 +63,7 @@ void deserialize_horarios_teoricos(const string &input, LineaMap &schedule)
 			ht.pos_recorrido = stoi(tokens[6]);
 			ht.horario = tokens[7];
 			ht.arranco_dia_anterior = tokens[8] == "1";
-			schedule[tokens[0]][tokens[1]][tokens[2]][tokens[3]] = ht;
+			schedule[tokens[0]][stoi(tokens[1])][tokens[2]][tokens[3]] = ht;
 		}
 	}
 }

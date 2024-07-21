@@ -19,8 +19,8 @@ struct HorarioTeorico
 // Definición de los tipos de datos anidados
 using ParadaMap = map<string, HorarioTeorico>; // clave: id_parada
 using RecorridoMap = map<string, ParadaMap>;   // clave: id_recorrido
-using TipoDiaMap = map<string, RecorridoMap>;  // clave: id_tipo_dia
-using LineaMap = map<string, TipoDiaMap>;      // clave: linea
+using TipoDiaMap = map<int, RecorridoMap>;     // clave: id_tipo_dia
+using LineaMap = map<string, TipoDiaMap>;      // clave: linea (es el codigo de la variante de la linea)
 // lista_horarios_teoricos_parada[linea][id_tipo_dia][id_recorrido][id_parada] = [delay,cantidad_boletos_vendidos,pos_recorrido,horario,arranco_dia_aterior]
 
 struct DataViaje
