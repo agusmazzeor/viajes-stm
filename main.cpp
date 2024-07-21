@@ -133,11 +133,43 @@ int main(int argc, char *argv[])
       all_viajes.insert(all_viajes.end(), viajes.begin(), viajes.end());
     }
 
-    // Imprimir todos los viajes procesados
+    // Actualizar `cantidad_boletos_vendidos` y `delay` en `lista_horarios_teoricos_parada`
+    for (const auto &viaje : all_viajes)
+    {
+      int dia_semana = obtener_dia_semana(viaje.fecha_evento);
+
+      auto linea_it = lista_horarios_teoricos_parada.find(viaje.sevar_codigo);
+      if (linea_it != lista_horarios_teoricos_parada.end())
+      {
+        auto dia_it = linea_it->second.find(dia_semana);
+        if (dia_it != linea_it->second.end())
+        {
+          auto parada_it = dia_it->second.find(viaje.codigo_parada_origen);
+          if (parada_it != dia_it->second.end())
+          {
+            auto recorrido_it = parada_it->second.find(viaje.recorrido);
+            if (recorrido_it != parada_it->second.end())
+            {
+              recorrido_it->second.cantidad_boletos_vendidos++;
+              if (recorrido_it->second.delay == -1 || viaje.delay < recorrido_it->second.delay)
+              {
+                recorrido_it->second.delay = viaje.delay;
+              }
+            }
+          }
+        }
+      }
+    }
+
     cout << "----------------------------" << endl;
     cout << "Todos los viajes procesados:" << endl;
     cout << "----------------------------" << endl;
     print_data_viaje(all_viajes);
+
+    cout << "----------------------------" << endl;
+    cout << "Todas las lineas procesadas:" << endl;
+    cout << "----------------------------" << endl;
+    print_data_linea(lista_horarios_teoricos_parada);
 
     cout << "Termine master" << endl;
   }
@@ -163,8 +195,6 @@ int main(int argc, char *argv[])
 
     vector<DataViaje> viajes;
     procesar_viajes(datos_viajes, viajes, start, count, lista_horarios_teoricos_parada);
-
-    // print_data_viaje(viajes);
 
     // Serializar los datos de los viajes
     string viajes_serializados = serialize_viajes(viajes);
