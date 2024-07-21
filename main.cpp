@@ -14,6 +14,7 @@
 using namespace std;
 
 const string LINEA_OMNIBUS = "144";
+const string DATOS_VIAJES = "datos_dummy/05_2024_viajes.csv";
 
 void procesar_viajes(const string &filename, vector<DataViaje> &data, int start, int count, const LineaMap &horarios_linea)
 {
@@ -66,8 +67,6 @@ int main(int argc, char *argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  const string datos_viajes = "datos_dummy/05_2024_viajes.csv";
-
   if (rank == 0)
   {
     // Master process
@@ -91,7 +90,7 @@ int main(int argc, char *argv[])
     }
 
     // Calcular chunks para procesar los viajes en los procesos esclavos
-    ifstream file(datos_viajes);
+    ifstream file(DATOS_VIAJES);
     string line;
     int total_lines = 0;
 
@@ -194,7 +193,7 @@ int main(int argc, char *argv[])
     MPI_Recv(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
     vector<DataViaje> viajes;
-    procesar_viajes(datos_viajes, viajes, start, count, lista_horarios_teoricos_parada);
+    procesar_viajes(DATOS_VIAJES, viajes, start, count, lista_horarios_teoricos_parada);
 
     // Serializar los datos de los viajes
     string viajes_serializados = serialize_viajes(viajes);
