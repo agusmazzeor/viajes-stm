@@ -6,12 +6,14 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+#include <chrono>
 #include "types.h"
 #include "calcular_horarios.h"
 #include "funciones_auxiliares.h"
 #include "serializers.h"
 
 using namespace std;
+using namespace std::chrono;
 
 const string LINEA_OMNIBUS = "144";
 const string DATOS_VIAJES = "datos_dummy/05_2024_viajes.csv";
@@ -27,6 +29,10 @@ int main(int argc, char *argv[])
   if (rank == 0)
   {
     // Master process
+
+    // Iniciar el temporizador
+    auto start_time = high_resolution_clock::now();
+
     LineaMap lista_horarios_teoricos_parada = procesar_horarios_teoricos(LINEA_OMNIBUS);
 
     // Serializar el mapa
@@ -127,7 +133,10 @@ int main(int argc, char *argv[])
     cout << "----------------------------" << endl;
     print_data_linea(lista_horarios_teoricos_parada);
 
-    cout << "Termine master" << endl;
+    // Parar el temporizador
+    auto end_time = high_resolution_clock::now();
+    auto duration = duration_cast<seconds>(end_time - start_time);
+    cout << "Tiempo de ejecución total: " << duration.count() << " segundos" << endl;
   }
   else
   {
