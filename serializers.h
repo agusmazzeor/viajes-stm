@@ -9,9 +9,9 @@
 
 using namespace std;
 
-void serialize_map(const unordered_map<string, double> &map, vector<char> &buffer);
-void deserialize_map(const vector<char> &buffer, unordered_map<string, double> &map);
 void serialize_horarios_teoricos(const LineaMap &schedule, string &output);
 void deserialize_horarios_teoricos(const string &input, LineaMap &schedule);
+string serialize_viajes(const vector<DataViaje> &viajes);
+vector<DataViaje> deserialize_viajes(const string &str);
 
 #endif // SERIALIZERS_H

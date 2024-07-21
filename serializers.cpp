@@ -1,31 +1,5 @@
 #include "serializers.h"
 
-void serialize_map(const unordered_map<string, double> &map, vector<char> &buffer)
-{
-	stringstream ss;
-	for (const auto &pair : map)
-	{
-		ss << pair.first << "," << pair.second << "\n";
-	}
-	string s = ss.str();
-	buffer.assign(s.begin(), s.end());
-}
-
-void deserialize_map(const vector<char> &buffer, unordered_map<string, double> &map)
-{
-	stringstream ss(string(buffer.begin(), buffer.end()));
-	string line;
-	while (getline(ss, line))
-	{
-		stringstream line_ss(line);
-		string key;
-		double value;
-		getline(line_ss, key, ',');
-		line_ss >> value;
-		map[key] = value;
-	}
-}
-
 void serialize_horarios_teoricos(const LineaMap &schedule, string &output)
 {
 	stringstream ss;
@@ -66,4 +40,48 @@ void deserialize_horarios_teoricos(const string &input, LineaMap &schedule)
 			schedule[tokens[0]][stoi(tokens[1])][tokens[2]][tokens[3]] = ht;
 		}
 	}
+}
+
+string serialize_viajes(const vector<DataViaje> &viajes)
+{
+	stringstream ss;
+	for (const auto &viaje : viajes)
+	{
+		ss << viaje.fecha_evento << ","
+			 << viaje.cantidad_pasajeros << ","
+			 << viaje.codigo_parada_origen << ","
+			 << viaje.cod_empresa << ","
+			 << viaje.linea_codigo << ","
+			 << viaje.dsc_linea << ","
+			 << viaje.sevar_codigo << ","
+			 << viaje.recorrido << ","
+			 << viaje.delay << "\n";
+	}
+	return ss.str();
+}
+
+vector<DataViaje> deserialize_viajes(const string &str)
+{
+	vector<DataViaje> viajes;
+	stringstream ss(str);
+	string line;
+	while (getline(ss, line))
+	{
+		stringstream line_ss(line);
+		string token;
+		DataViaje viaje;
+
+		getline(line_ss, viaje.fecha_evento, ',');
+		getline(line_ss, viaje.cantidad_pasajeros, ',');
+		getline(line_ss, viaje.codigo_parada_origen, ',');
+		getline(line_ss, viaje.cod_empresa, ',');
+		getline(line_ss, viaje.linea_codigo, ',');
+		getline(line_ss, viaje.dsc_linea, ',');
+		getline(line_ss, viaje.sevar_codigo, ',');
+		getline(line_ss, viaje.recorrido, ',');
+		line_ss >> viaje.delay;
+
+		viajes.push_back(viaje);
+	}
+	return viajes;
 }

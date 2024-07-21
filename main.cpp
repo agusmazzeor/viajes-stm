@@ -120,27 +120,25 @@ int main(int argc, char *argv[])
     }
 
     // Obtener los resultados de los esclavos
-    unordered_map<string, double> delay_map;
+    vector<DataViaje> all_viajes;
     for (int i = 1; i < size; ++i)
     {
-      int map_size;
-      MPI_Recv(&map_size, 1, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-      vector<char> buffer(map_size);
-      MPI_Recv(buffer.data(), map_size, MPI_CHAR, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      int viajes_size;
+      MPI_Recv(&viajes_size, 1, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      vector<char> viajes_buffer(viajes_size);
+      MPI_Recv(viajes_buffer.data(), viajes_size, MPI_CHAR, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-      unordered_map<string, double> slave_delay_map;
-      deserialize_map(buffer, slave_delay_map);
-      for (const auto &pair : slave_delay_map)
-      {
-        delay_map[pair.first] += pair.second;
-      }
+      string viajes_serializados(viajes_buffer.begin(), viajes_buffer.end());
+      vector<DataViaje> viajes = deserialize_viajes(viajes_serializados);
+      all_viajes.insert(all_viajes.end(), viajes.begin(), viajes.end());
     }
 
-    // Imprimir resultados
-    for (const auto &pair : delay_map)
-    {
-      cout << "Stop ID: " << pair.first << ", Total Delay: " << pair.second << " minutes" << endl;
-    }
+    // Imprimir todos los viajes procesados
+    cout << "----------------------------" << endl;
+    cout << "Todos los viajes procesados:" << endl;
+    cout << "----------------------------" << endl;
+    print_data_viaje(all_viajes);
+
     cout << "Termine master" << endl;
   }
   else
@@ -166,22 +164,16 @@ int main(int argc, char *argv[])
     vector<DataViaje> viajes;
     procesar_viajes(datos_viajes, viajes, start, count, lista_horarios_teoricos_parada);
 
-    print_data_viaje(viajes);
+    // print_data_viaje(viajes);
 
-    unordered_map<string, double> slave_delay_map;
-    for (const auto &viaje : viajes)
-    {
-      slave_delay_map[viaje.sevar_codigo] += viaje.delay;
-    }
+    // Serializar los datos de los viajes
+    string viajes_serializados = serialize_viajes(viajes);
+    int viajes_size = viajes_serializados.size();
 
-    vector<char> buffer_out;
-    serialize_map(slave_delay_map, buffer_out);
+    MPI_Send(&viajes_size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    MPI_Send(viajes_serializados.data(), viajes_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
 
-    int map_size = buffer_out.size();
-    MPI_Send(&map_size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-    MPI_Send(buffer_out.data(), map_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
-
-    cout << "Termine slave con rank: " << rank << ", con slave_delay_map de size: " << slave_delay_map.size() << endl;
+    cout << "---> Termine proceso con rank: " << rank << ", con cantidad de viajes: " << viajes.size() << endl;
   }
 
   MPI_Finalize();
