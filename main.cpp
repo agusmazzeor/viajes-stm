@@ -133,6 +133,8 @@ int main(int argc, char *argv[])
     cout << "----------------------------" << endl;
     print_data_linea(lista_horarios_teoricos_parada);
 
+    guardar_linea_map_en_archivo(lista_horarios_teoricos_parada, "resultado/retrasos_de_lineas.csv");
+
     // Parar el temporizador
     auto end_time = high_resolution_clock::now();
     auto duration = duration_cast<seconds>(end_time - start_time);

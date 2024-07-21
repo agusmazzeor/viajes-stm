@@ -12,6 +12,44 @@ vector<string> split(const string &s, char delimiter)
 	return tokens;
 }
 
+void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filename)
+{
+	ofstream file(filename);
+	if (!file.is_open())
+	{
+		cerr << "Error al abrir el archivo para escribir: " << filename << endl;
+		return;
+	}
+
+	// Escribir los encabezados
+	file << "variante,tipo_dia,parada,recorrido,delay,cant_boletos,pos_recorrido,horario,arranco_dia_anterior" << endl;
+
+	for (const auto &linea : linea_map)
+	{
+		for (const auto &dia : linea.second)
+		{
+			for (const auto &parada : dia.second)
+			{
+				for (const auto &recorrido : parada.second)
+				{
+					const HorarioTeorico &horario = recorrido.second;
+					file << linea.first << ","
+							 << dia.first << ","
+							 << parada.first << ","
+							 << recorrido.first << ","
+							 << horario.delay << ","
+							 << horario.cantidad_boletos_vendidos << ","
+							 << horario.pos_recorrido << ","
+							 << horario.horario << ","
+							 << horario.arranco_dia_anterior << endl;
+				}
+			}
+		}
+	}
+
+	file.close();
+}
+
 void print_data_linea(LineaMap &lista_horarios_teoricos_parada)
 {
 	// Imprimir algunos datos para verificar la estructura
