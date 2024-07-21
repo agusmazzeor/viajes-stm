@@ -16,49 +16,6 @@ using namespace std;
 const string LINEA_OMNIBUS = "144";
 const string DATOS_VIAJES = "datos_dummy/05_2024_viajes.csv";
 
-void procesar_viajes(const string &filename, vector<DataViaje> &data, int start, int count, const LineaMap &horarios_linea)
-{
-  ifstream file(filename);
-  string line;
-
-  // Ignorar la primera línea del encabezado
-  if (getline(file, line))
-  {
-    // Avanzar hasta el inicio del chunk
-    for (int i = 0; i < start; ++i)
-    {
-      getline(file, line);
-    }
-
-    // Leer las líneas del chunk
-    for (int i = 0; i < count; ++i)
-    {
-      if (getline(file, line))
-      {
-        vector<string> tokens = split(line, ',');
-        DataViaje viaje;
-
-        viaje.sevar_codigo = tokens[16];
-        // Agregar solo si sevar_codigo está en lineas_a_evaluar
-        if (horarios_linea.find(viaje.sevar_codigo) != horarios_linea.end())
-        {
-          viaje.fecha_evento = tokens[2];
-          viaje.cantidad_pasajeros = tokens[10];
-          viaje.codigo_parada_origen = tokens[11];
-          viaje.cod_empresa = tokens[12];
-          viaje.linea_codigo = tokens[14];
-          viaje.dsc_linea = tokens[15];
-          encontrar_recorrido_y_calcular_delay(viaje, horarios_linea);
-          if (!viaje.recorrido.empty())
-          {
-            data.push_back(viaje);
-          }
-        }
-      }
-    }
-  }
-}
-
 int main(int argc, char *argv[])
 {
   MPI_Init(&argc, &argv);
