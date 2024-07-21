@@ -21,7 +21,7 @@ using RecorridoMap = map<string, HorarioTeorico>; // clave: id_recorrido
 using ParadaMap = map<string, RecorridoMap>;      // clave: id_parada
 using TipoDiaMap = map<int, ParadaMap>;           // clave: id_tipo_dia
 using LineaMap = map<string, TipoDiaMap>;         // clave: linea (es el codigo de la variante de la linea)
-// lista_horarios_teoricos_parada[linea][id_tipo_dia][id_parada][id_recorrido] = [delay,cantidad_boletos_vendidos,pos_recorrido,horario,arranco_dia_aterior]
+// lista_horarios_teoricos_parada[linea][id_tipo_dia][id_parada][id_recorrido] = horario_teorico (delay,cantidad_boletos_vendidos,pos_recorrido,horario,arranco_dia_aterior)
 
 // Definición de la estructura para la información de los viajes
 struct DataViaje
@@ -34,7 +34,7 @@ struct DataViaje
   string dsc_linea;            // nombre publico de la linea
   string sevar_codigo;         // codigo de la variante
   string recorrido;            // recorrido del omnibus (calculado)
-  string delay;                // delay del omnibus (calculado)
+  int delay;                   // delay del omnibus (calculado)
 };
 
 #endif // TYPES_H

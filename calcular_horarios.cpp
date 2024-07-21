@@ -174,7 +174,7 @@ int convertir_hmm_a_minutos(const string &horario_hmm)
 	return horas * 60 + minutos;
 }
 
-string calcular_delay(const DataViaje &v, const LineaMap &horarios_linea)
+int calcular_delay(const DataViaje &v, const LineaMap &horarios_linea)
 {
 	HorarioTeorico horario_teorico;
 	auto linea_it = horarios_linea.find(v.sevar_codigo);
@@ -197,11 +197,11 @@ string calcular_delay(const DataViaje &v, const LineaMap &horarios_linea)
 						int horario_teorico_minutos = convertir_hmm_a_minutos(horario_teorico.horario);
 
 						int diff = horario_viaje_minutos - horario_teorico_minutos;
-						return to_string(diff);
+						return diff;
 					}
 				}
 			}
 		}
 	}
-	return "";
+	return -1;
 };

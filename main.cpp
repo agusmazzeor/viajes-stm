@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
         unordered_map<string, double> slave_delay_map;
         for (const auto &viaje : slave_data)
         {
-            slave_delay_map[viaje.sevar_codigo] += stoi(viaje.delay);
+            slave_delay_map[viaje.sevar_codigo] += viaje.delay;
         }
 
         vector<char> buffer_out;
