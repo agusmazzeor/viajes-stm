@@ -33,6 +33,15 @@ using ParadaMap = map<string, RecorridoMap>;       // clave: id_parada
 using TipoDiaMap = map<int, ParadaMap>;            // clave: id_tipo_dia
 using VarianteMap = map<string, TipoDiaMap>;       // clave: variante de la linea
 using LineaMap = map<string, VarianteMap>;         // clave: linea
+// algo[linea][variante][tipo_dia][parada][recorrido][pos_recorrido]
+
+// algo[linea][variante][tipo_dia][recorrido][pos_recorrido][parada]
+using ParadaMapFinal = map<string, HorarioTeorico>;          // clave: id_parada
+using PosRecorridoMapFinal = map<int, ParadaMapFinal>;       // clave: ordinal
+using RecorridoMapFinal = map<string, PosRecorridoMapFinal>; // clave: id_recorrido
+using TipoDiaMapFinal = map<int, RecorridoMapFinal>;         // clave: id_tipo_dia
+using VarianteMapFinal = map<string, TipoDiaMapFinal>;       // clave: variante de la linea
+using LineaMapFinal = map<string, VarianteMapFinal>;         // clave: linea
 
 // Definición de la estructura para la información de los viajes
 struct DataViaje

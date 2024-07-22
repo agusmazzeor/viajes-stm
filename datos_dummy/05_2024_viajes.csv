@@ -1,4 +1,5 @@
 id_viaje,con_tarjeta,fecha_evento,tipo_viaje,descripcion_tipo_viaje,grupo_usuario,descripcion_grupo_usuario,grupo_usuario_especifico,descripcion_grupo_usuario_espe,ordinal_de_tramo,cantidad_pasajeros,codigo_parada_origen,cod_empresa,descrip_empresa,linea_codigo,dsc_linea,sevar_codigo
+9359865,1,2024-05-19 10:00:07,7,EST. A,2,ESTUDIANTE,21,ESTUDIANTE A,2,1,3453,10,C.O.E.T.C.,497,144,8872
 9359865,1,2024-05-19 20:19:07,7,EST. A,2,ESTUDIANTE,21,ESTUDIANTE A,2,1,3456,10,C.O.E.T.C.,497,144,8872
 9359865,1,2024-05-19 21:03:07,7,EST. A,2,ESTUDIANTE,21,ESTUDIANTE A,2,2,3456,10,C.O.E.T.C.,497,144,8872
 9359865,1,2024-05-19 21:01:07,7,EST. A,2,ESTUDIANTE,21,ESTUDIANTE A,2,2,3456,10,C.O.E.T.C.,497,144,8872

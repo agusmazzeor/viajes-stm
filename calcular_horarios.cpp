@@ -155,8 +155,6 @@ int convertir_hmm_a_minutos(const string &horario_hmm)
 
 void encontrar_recorrido_y_calcular_delay(DataViaje &v, const LineaMap &horarios_linea)
 {
-	int dia_semana = obtener_dia_semana(v.fecha_evento);
-
 	auto linea_it = horarios_linea.find(v.dsc_linea);
 	if (linea_it == horarios_linea.end())
 		return;
@@ -165,6 +163,7 @@ void encontrar_recorrido_y_calcular_delay(DataViaje &v, const LineaMap &horarios
 	if (variante_it == linea_it->second.end())
 		return;
 
+	int dia_semana = obtener_dia_semana(v.fecha_evento);
 	auto dia_it = variante_it->second.find(dia_semana);
 	if (dia_it == variante_it->second.end())
 		return;

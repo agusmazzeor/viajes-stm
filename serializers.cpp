@@ -95,3 +95,28 @@ vector<DataViaje> deserialize_viajes(const string &str)
 	}
 	return viajes;
 }
+
+void convertir_linea_map_a_map_linea(const LineaMap &schedule, LineaMapFinal &linea_map_final)
+{
+	stringstream ss;
+	for (const auto &linea : schedule)
+	{
+		for (const auto &variante : linea.second)
+		{
+			for (const auto &id_tipo_dia : variante.second)
+			{
+				for (const auto &id_parada : id_tipo_dia.second)
+				{
+					for (const auto &id_recorrido : id_parada.second)
+					{
+						for (const auto &pos_recorrido : id_recorrido.second)
+						{
+							const HorarioTeorico &ht = pos_recorrido.second;
+							linea_map_final[linea.first][variante.first][id_tipo_dia.first][id_recorrido.first][pos_recorrido.first][id_parada.first] = ht;
+						}
+					}
+				}
+			}
+		}
+	}
+}

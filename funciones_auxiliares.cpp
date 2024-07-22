@@ -59,6 +59,53 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 	file.close();
 }
 
+void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const string &filename)
+{
+	ofstream file(filename);
+	if (!file.is_open())
+	{
+		cerr << "Error al abrir el archivo para escribir: " << filename << endl;
+		return;
+	}
+
+	// Escribir los encabezados
+	file << "linea,variante,tipo_dia,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior" << endl;
+
+	for (const auto &linea : linea_map)
+	{
+		for (const auto &variante : linea.second)
+		{
+			for (const auto &dia : variante.second)
+			{
+				for (const auto &recorrido : dia.second)
+				{
+					for (const auto &pos_recorrido : recorrido.second)
+					{
+						for (const auto &parada : pos_recorrido.second)
+						{
+							const HorarioTeorico &horario = parada.second;
+							file << linea.first << ","
+									 << variante.first << ","
+									 << dia.first << ","
+									 << parada.first << ","
+									 << recorrido.first << ","
+									 << pos_recorrido.first << ","
+									 << horario.delay << ","
+									 << horario.cantidad_boletos_vendidos << ","
+									 << horario.horario << ","
+									 << horario.arranco_dia_anterior << ","
+									 << horario.retraso_acumulado << ","
+									 << horario.cant_pasajeros_parada_anterior << endl;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	file.close();
+}
+
 void guardar_tiempo_de_ejecucion_en_archivo(const int &duration, const string &filename)
 {
 	ofstream file(filename);

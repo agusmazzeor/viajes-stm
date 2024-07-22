@@ -130,7 +130,48 @@ int main(int argc, char *argv[])
       }
     }
 
-    // TODO: Recorrer todos los horarios teóricos y actualizar los nuevos campos
+    // Recorrer todos los horarios teóricos y actualizar los nuevos campos
+    // lista_horarios_teoricos_parada[linea][variante][tipo_dia][parada][recorrido][pos_recorrido]
+    // linea_map_final[linea][variante][tipo_dia][recorrido][pos_recorrido][parada]
+    LineaMapFinal linea_map_final;
+    convertir_linea_map_a_map_linea(lista_horarios_teoricos_parada, linea_map_final);
+
+    // variante, parada, recorrido, pos_recorrido, delay, retraso_parada_anterior
+    for (auto &linea : linea_map_final)
+    {
+      for (auto &variante : linea.second)
+      {
+        for (auto &tipo_dia : variante.second)
+        {
+          for (auto &recorrido : tipo_dia.second)
+          {
+            int retraso_acumulado_anterior = -1;
+            int cant_pasajeros_parada_anterior = 0;
+
+            for (auto &pos_recorrido : recorrido.second)
+            {
+              for (auto &parada : pos_recorrido.second)
+              {
+                HorarioTeorico &ht = parada.second;
+                ht.retraso_acumulado = retraso_acumulado_anterior;
+                ht.cant_pasajeros_parada_anterior = cant_pasajeros_parada_anterior;
+
+                cout << "Variante: " << variante.first << endl;
+                cout << "Parada: " << parada.first << endl;
+                cout << "recorrido: " << recorrido.first << endl;
+                cout << "pos_recorrido: " << pos_recorrido.first << endl;
+                cout << "delay: " << ht.delay << endl;
+                cout << "retraso_parada_anterior: " << retraso_acumulado_anterior << endl;
+                cout << "------------------------" << endl;
+                // Actualizar los valores acumulados para la siguiente parada
+                retraso_acumulado_anterior = ht.delay;
+                cant_pasajeros_parada_anterior = ht.cantidad_boletos_vendidos;
+              }
+            }
+          }
+        }
+      }
+    };
 
     // cout << "----------------------------" << endl;
     // cout << "Todos los viajes procesados:" << endl;
@@ -143,7 +184,8 @@ int main(int argc, char *argv[])
     // print_data_linea(lista_horarios_teoricos_parada);
 
     // Guardar `lista_horarios_teoricos_parada` en un archivo
-    guardar_linea_map_en_archivo(lista_horarios_teoricos_parada, "resultado/retrasos_de_lineas.csv");
+    // guardar_linea_map_en_archivo(lista_horarios_teoricos_parada, "resultado/retrasos_de_lineas.csv");
+    guardar_linea_map_final_en_archivo(linea_map_final, "resultado/retrasos_de_lineas.csv");
 
     // Parar el temporizador
     auto end_time = high_resolution_clock::now();

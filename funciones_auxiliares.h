@@ -14,5 +14,6 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 void guardar_tiempo_de_ejecucion_en_archivo(const int &duration, const string &filename);
 void print_data_linea(LineaMap &lista_horarios_teoricos_parada);
 void print_data_viaje(const vector<DataViaje> &data_viajes);
+void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const string &filename);
 
 #endif // FUNCIONES_AUXILIARES_H
