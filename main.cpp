@@ -15,10 +15,6 @@
 using namespace std;
 using namespace std::chrono;
 
-const string LINEA_OMNIBUS = "144";
-const string DATOS_VIAJES = "datos_dummy/05_2024_viajes.csv";
-// const string DATOS_VIAJES = "datos/viajes/viajes_stm_052024.csv";
-
 int main(int argc, char *argv[])
 {
   MPI_Init(&argc, &argv);
@@ -113,10 +109,16 @@ int main(int argc, char *argv[])
             auto recorrido_it = parada_it->second.find(viaje.recorrido);
             if (recorrido_it != parada_it->second.end())
             {
-              recorrido_it->second.cantidad_boletos_vendidos++;
-              if (recorrido_it->second.delay == -1 || viaje.delay < recorrido_it->second.delay)
+              auto &pos_recorrido_map = recorrido_it->second;
+              auto pos_recorrido_it = pos_recorrido_map.find(viaje.pos_recorrido);
+              if (pos_recorrido_it != pos_recorrido_map.end())
               {
-                recorrido_it->second.delay = viaje.delay;
+                HorarioTeorico &horario_teorico = pos_recorrido_it->second;
+                horario_teorico.cantidad_boletos_vendidos++;
+                if (horario_teorico.delay == -1 || viaje.delay < horario_teorico.delay)
+                {
+                  horario_teorico.delay = viaje.delay;
+                }
               }
             }
           }

@@ -22,7 +22,7 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 	}
 
 	// Escribir los encabezados
-	file << "variante,tipo_dia,parada,recorrido,delay,cant_boletos,pos_recorrido,horario,arranco_dia_anterior" << endl;
+	file << "variante,tipo_dia,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior" << endl;
 
 	for (const auto &linea : linea_map)
 	{
@@ -32,16 +32,19 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 			{
 				for (const auto &recorrido : parada.second)
 				{
-					const HorarioTeorico &horario = recorrido.second;
-					file << linea.first << ","
-							 << dia.first << ","
-							 << parada.first << ","
-							 << recorrido.first << ","
-							 << horario.delay << ","
-							 << horario.cantidad_boletos_vendidos << ","
-							 << horario.pos_recorrido << ","
-							 << horario.horario << ","
-							 << horario.arranco_dia_anterior << endl;
+					for (const auto &pos_recorrido : recorrido.second)
+					{
+						const HorarioTeorico &horario = pos_recorrido.second;
+						file << linea.first << ","
+								 << dia.first << ","
+								 << parada.first << ","
+								 << recorrido.first << ","
+								 << pos_recorrido.first << ","
+								 << horario.delay << ","
+								 << horario.cantidad_boletos_vendidos << ","
+								 << horario.horario << ","
+								 << horario.arranco_dia_anterior << endl;
+					}
 				}
 			}
 		}
@@ -64,13 +67,16 @@ void print_data_linea(LineaMap &lista_horarios_teoricos_parada)
 				cout << "    Parada: " << parada.first << endl;
 				for (const auto &recorrido : parada.second)
 				{
-					const HorarioTeorico &ht = recorrido.second;
 					cout << "      Recorrido: " << recorrido.first << endl;
-					cout << "        Delay: " << ht.delay << endl;
-					cout << "        Boletos vendidos: " << ht.cantidad_boletos_vendidos << endl;
-					cout << "        Pos recorrido: " << ht.pos_recorrido << endl;
-					cout << "        Horario: " << ht.horario << endl;
-					cout << "        Arrancó día anterior: " << (ht.arranco_dia_anterior ? "Sí" : "No") << endl;
+					for (const auto &pos_recorrido : recorrido.second)
+					{
+						const HorarioTeorico &ht = pos_recorrido.second;
+						cout << "        Pos recorrido: " << pos_recorrido.first << endl;
+						cout << "          Delay: " << ht.delay << endl;
+						cout << "          Boletos vendidos: " << ht.cantidad_boletos_vendidos << endl;
+						cout << "          Horario: " << ht.horario << endl;
+						cout << "          Arrancó día anterior: " << (ht.arranco_dia_anterior ? "Sí" : "No") << endl;
+					}
 				}
 			}
 		}
@@ -90,6 +96,7 @@ void print_data_viaje(const vector<DataViaje> &data_viajes)
 		cout << "Código de variante (sevar_codigo): " << viaje.sevar_codigo << endl;
 		cout << "Recorrido omnibus: " << viaje.recorrido << endl;
 		cout << "Delay omnibus (minutos): " << viaje.delay << endl;
+		cout << "Pos recorrido omnibus: " << viaje.pos_recorrido << endl;
 		cout << "------------------------" << endl;
 	}
 }

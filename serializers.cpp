@@ -11,10 +11,12 @@ void serialize_horarios_teoricos(const LineaMap &schedule, string &output)
 			{
 				for (const auto &id_recorrido : id_parada.second)
 				{
-					const HorarioTeorico &ht = id_recorrido.second;
-					ss << linea.first << "," << id_tipo_dia.first << "," << id_parada.first << "," << id_recorrido.first << ","
-						 << ht.delay << "," << ht.cantidad_boletos_vendidos << "," << ht.pos_recorrido << ","
-						 << ht.horario << "," << ht.arranco_dia_anterior << "\n";
+					for (const auto &pos_recorrido : id_recorrido.second)
+					{
+						const HorarioTeorico &ht = pos_recorrido.second;
+						ss << linea.first << "," << id_tipo_dia.first << "," << id_parada.first << "," << id_recorrido.first << "," << pos_recorrido.first << ","
+							 << ht.delay << "," << ht.cantidad_boletos_vendidos << "," << ht.horario << "," << ht.arranco_dia_anterior << "\n";
+					}
 				}
 			}
 		}
@@ -32,12 +34,11 @@ void deserialize_horarios_teoricos(const string &input, LineaMap &schedule)
 		if (tokens.size() == 9)
 		{
 			HorarioTeorico ht;
-			ht.delay = stoi(tokens[4]);
-			ht.cantidad_boletos_vendidos = stoi(tokens[5]);
-			ht.pos_recorrido = stoi(tokens[6]);
+			ht.delay = stoi(tokens[5]);
+			ht.cantidad_boletos_vendidos = stoi(tokens[6]);
 			ht.horario = tokens[7];
 			ht.arranco_dia_anterior = tokens[8] == "1";
-			schedule[tokens[0]][stoi(tokens[1])][tokens[2]][tokens[3]] = ht;
+			schedule[tokens[0]][stoi(tokens[1])][tokens[2]][tokens[3]][stoi(tokens[4])] = ht;
 		}
 	}
 }
@@ -55,6 +56,7 @@ string serialize_viajes(const vector<DataViaje> &viajes)
 			 << viaje.dsc_linea << ","
 			 << viaje.sevar_codigo << ","
 			 << viaje.recorrido << ","
+			 << viaje.pos_recorrido << ","
 			 << viaje.delay << "\n";
 	}
 	return ss.str();
@@ -79,6 +81,8 @@ vector<DataViaje> deserialize_viajes(const string &str)
 		getline(line_ss, viaje.dsc_linea, ',');
 		getline(line_ss, viaje.sevar_codigo, ',');
 		getline(line_ss, viaje.recorrido, ',');
+		line_ss >> viaje.pos_recorrido;
+		line_ss.ignore(1);
 		line_ss >> viaje.delay;
 
 		viajes.push_back(viaje);
