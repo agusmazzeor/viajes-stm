@@ -126,6 +126,8 @@ int main(int argc, char *argv[])
       }
     }
 
+    // TODO: Recorrer todos los horarios teóricos y actualizar los nuevos campos
+
     // cout << "----------------------------" << endl;
     // cout << "Todos los viajes procesados:" << endl;
     // cout << "----------------------------" << endl;
@@ -143,6 +145,7 @@ int main(int argc, char *argv[])
     auto end_time = high_resolution_clock::now();
     auto duration = duration_cast<seconds>(end_time - start_time);
     cout << "Tiempo de ejecución total: " << duration.count() << " segundos" << endl;
+    guardar_tiempo_de_ejecucion_en_archivo(duration.count(), "resultado/tiempo_de_ejecucion.txt");
   }
   else
   {

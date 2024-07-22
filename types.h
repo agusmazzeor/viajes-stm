@@ -22,6 +22,8 @@ struct HorarioTeorico
   int cantidad_boletos_vendidos;
   string horario;
   bool arranco_dia_anterior;
+  int retraso_acumulado;
+  int cant_pasajeros_parada_anterior;
 };
 
 // Definición de los tipos de datos anidados

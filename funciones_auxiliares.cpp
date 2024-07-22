@@ -22,7 +22,7 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 	}
 
 	// Escribir los encabezados
-	file << "variante,tipo_dia,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior" << endl;
+	file << "variante,tipo_dia,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior" << endl;
 
 	for (const auto &linea : linea_map)
 	{
@@ -43,13 +43,28 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 								 << horario.delay << ","
 								 << horario.cantidad_boletos_vendidos << ","
 								 << horario.horario << ","
-								 << horario.arranco_dia_anterior << endl;
+								 << horario.arranco_dia_anterior << ","
+								 << horario.retraso_acumulado << ","
+								 << horario.cant_pasajeros_parada_anterior << endl;
 					}
 				}
 			}
 		}
 	}
 
+	file.close();
+}
+
+void guardar_tiempo_de_ejecucion_en_archivo(const int &duration, const string &filename)
+{
+	ofstream file(filename);
+	if (!file.is_open())
+	{
+		cerr << "Error al abrir el archivo para escribir: " << filename << endl;
+		return;
+	}
+
+	file << "Tiempo de ejecución total: " << duration << " segundos" << endl;
 	file.close();
 }
 
@@ -76,6 +91,8 @@ void print_data_linea(LineaMap &lista_horarios_teoricos_parada)
 						cout << "          Boletos vendidos: " << ht.cantidad_boletos_vendidos << endl;
 						cout << "          Horario: " << ht.horario << endl;
 						cout << "          Arrancó día anterior: " << (ht.arranco_dia_anterior ? "Sí" : "No") << endl;
+						cout << "          Retraso parada anterior: " << ht.retraso_acumulado << endl;
+						cout << "          Cant. boletos parada anterior: " << ht.cant_pasajeros_parada_anterior << endl;
 					}
 				}
 			}

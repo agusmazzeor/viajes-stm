@@ -15,7 +15,8 @@ void serialize_horarios_teoricos(const LineaMap &schedule, string &output)
 					{
 						const HorarioTeorico &ht = pos_recorrido.second;
 						ss << linea.first << "," << id_tipo_dia.first << "," << id_parada.first << "," << id_recorrido.first << "," << pos_recorrido.first << ","
-							 << ht.delay << "," << ht.cantidad_boletos_vendidos << "," << ht.horario << "," << ht.arranco_dia_anterior << "\n";
+							 << ht.delay << "," << ht.cantidad_boletos_vendidos << "," << ht.horario << "," << ht.arranco_dia_anterior << ","
+							 << ht.retraso_acumulado << "," << ht.cant_pasajeros_parada_anterior << "\n";
 					}
 				}
 			}
@@ -31,13 +32,15 @@ void deserialize_horarios_teoricos(const string &input, LineaMap &schedule)
 	while (getline(ss, line))
 	{
 		vector<string> tokens = split(line, ',');
-		if (tokens.size() == 9)
+		if (tokens.size() == 11)
 		{
 			HorarioTeorico ht;
 			ht.delay = stoi(tokens[5]);
 			ht.cantidad_boletos_vendidos = stoi(tokens[6]);
 			ht.horario = tokens[7];
 			ht.arranco_dia_anterior = tokens[8] == "1";
+			ht.retraso_acumulado = stoi(tokens[9]);
+			ht.cant_pasajeros_parada_anterior = stoi(tokens[10]);
 			schedule[tokens[0]][stoi(tokens[1])][tokens[2]][tokens[3]][stoi(tokens[4])] = ht;
 		}
 	}
