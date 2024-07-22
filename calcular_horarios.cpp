@@ -68,8 +68,10 @@ LineaMap procesar_horarios_teoricos(string linea_omnibus)
 			ht.cantidad_boletos_vendidos = 0;
 			ht.horario = horario;
 			ht.arranco_dia_anterior = arranco_dia_anterior;
+			ht.retraso_acumulado = -1;
+			ht.cant_pasajeros_parada_anterior = 0;
 
-			lista_horarios_teoricos_parada[variante][id_tipo_dia][id_parada][id_recorrido][pos_recorrido] = ht;
+			lista_horarios_teoricos_parada[linea_omnibus][variante][id_tipo_dia][id_parada][id_recorrido][pos_recorrido] = ht;
 		}
 	}
 
@@ -155,12 +157,16 @@ void encontrar_recorrido_y_calcular_delay(DataViaje &v, const LineaMap &horarios
 {
 	int dia_semana = obtener_dia_semana(v.fecha_evento);
 
-	auto linea_it = horarios_linea.find(v.sevar_codigo);
+	auto linea_it = horarios_linea.find(v.dsc_linea);
 	if (linea_it == horarios_linea.end())
 		return;
 
-	auto dia_it = linea_it->second.find(dia_semana);
-	if (dia_it == linea_it->second.end())
+	auto variante_it = linea_it->second.find(v.sevar_codigo);
+	if (variante_it == linea_it->second.end())
+		return;
+
+	auto dia_it = variante_it->second.find(dia_semana);
+	if (dia_it == variante_it->second.end())
 		return;
 
 	auto parada_it = dia_it->second.find(v.codigo_parada_origen);
@@ -232,16 +238,16 @@ void procesar_viajes(const string &filename, vector<DataViaje> &data, int start,
 				vector<string> tokens = split(line, ',');
 				DataViaje viaje;
 
-				viaje.sevar_codigo = tokens[16];
-				// Agregar solo si sevar_codigo está en lineas_a_evaluar
-				if (horarios_linea.find(viaje.sevar_codigo) != horarios_linea.end())
+				viaje.dsc_linea = tokens[15];
+				// Agregar solo si dsc_linea está en lineas_a_evaluar
+				if (horarios_linea.find(viaje.dsc_linea) != horarios_linea.end())
 				{
 					viaje.fecha_evento = tokens[2];
 					viaje.cantidad_pasajeros = tokens[10];
 					viaje.codigo_parada_origen = tokens[11];
 					viaje.cod_empresa = tokens[12];
 					viaje.linea_codigo = tokens[14];
-					viaje.dsc_linea = tokens[15];
+					viaje.sevar_codigo = tokens[16];
 					encontrar_recorrido_y_calcular_delay(viaje, horarios_linea);
 					if (!viaje.recorrido.empty())
 					{

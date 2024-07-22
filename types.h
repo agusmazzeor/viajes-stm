@@ -31,7 +31,8 @@ using PosRecorridoMap = map<int, HorarioTeorico>;  // clave: ordinal
 using RecorridoMap = map<string, PosRecorridoMap>; // clave: id_recorrido
 using ParadaMap = map<string, RecorridoMap>;       // clave: id_parada
 using TipoDiaMap = map<int, ParadaMap>;            // clave: id_tipo_dia
-using LineaMap = map<string, TipoDiaMap>;          // clave: linea (es el codigo de la variante de la linea)
+using VarianteMap = map<string, TipoDiaMap>;       // clave: variante de la linea
+using LineaMap = map<string, VarianteMap>;         // clave: linea
 
 // Definición de la estructura para la información de los viajes
 struct DataViaje

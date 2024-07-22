@@ -22,30 +22,34 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 	}
 
 	// Escribir los encabezados
-	file << "variante,tipo_dia,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior" << endl;
+	file << "linea,variante,tipo_dia,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior" << endl;
 
 	for (const auto &linea : linea_map)
 	{
-		for (const auto &dia : linea.second)
+		for (const auto &variante : linea.second)
 		{
-			for (const auto &parada : dia.second)
+			for (const auto &dia : variante.second)
 			{
-				for (const auto &recorrido : parada.second)
+				for (const auto &parada : dia.second)
 				{
-					for (const auto &pos_recorrido : recorrido.second)
+					for (const auto &recorrido : parada.second)
 					{
-						const HorarioTeorico &horario = pos_recorrido.second;
-						file << linea.first << ","
-								 << dia.first << ","
-								 << parada.first << ","
-								 << recorrido.first << ","
-								 << pos_recorrido.first << ","
-								 << horario.delay << ","
-								 << horario.cantidad_boletos_vendidos << ","
-								 << horario.horario << ","
-								 << horario.arranco_dia_anterior << ","
-								 << horario.retraso_acumulado << ","
-								 << horario.cant_pasajeros_parada_anterior << endl;
+						for (const auto &pos_recorrido : recorrido.second)
+						{
+							const HorarioTeorico &horario = pos_recorrido.second;
+							file << linea.first << ","
+									 << variante.first << ","
+									 << dia.first << ","
+									 << parada.first << ","
+									 << recorrido.first << ","
+									 << pos_recorrido.first << ","
+									 << horario.delay << ","
+									 << horario.cantidad_boletos_vendidos << ","
+									 << horario.horario << ","
+									 << horario.arranco_dia_anterior << ","
+									 << horario.retraso_acumulado << ","
+									 << horario.cant_pasajeros_parada_anterior << endl;
+						}
 					}
 				}
 			}
@@ -74,25 +78,29 @@ void print_data_linea(LineaMap &lista_horarios_teoricos_parada)
 	for (const auto &linea : lista_horarios_teoricos_parada)
 	{
 		cout << "Linea: " << linea.first << endl;
-		for (const auto &tipo_dia : linea.second)
+		for (const auto &variante : linea.second)
 		{
-			cout << "  Tipo de día: " << tipo_dia.first << endl;
-			for (const auto &parada : tipo_dia.second)
+			cout << "  Variante: " << variante.first << endl;
+			for (const auto &tipo_dia : variante.second)
 			{
-				cout << "    Parada: " << parada.first << endl;
-				for (const auto &recorrido : parada.second)
+				cout << "    Tipo de día: " << tipo_dia.first << endl;
+				for (const auto &parada : tipo_dia.second)
 				{
-					cout << "      Recorrido: " << recorrido.first << endl;
-					for (const auto &pos_recorrido : recorrido.second)
+					cout << "      Parada: " << parada.first << endl;
+					for (const auto &recorrido : parada.second)
 					{
-						const HorarioTeorico &ht = pos_recorrido.second;
-						cout << "        Pos recorrido: " << pos_recorrido.first << endl;
-						cout << "          Delay: " << ht.delay << endl;
-						cout << "          Boletos vendidos: " << ht.cantidad_boletos_vendidos << endl;
-						cout << "          Horario: " << ht.horario << endl;
-						cout << "          Arrancó día anterior: " << (ht.arranco_dia_anterior ? "Sí" : "No") << endl;
-						cout << "          Retraso parada anterior: " << ht.retraso_acumulado << endl;
-						cout << "          Cant. boletos parada anterior: " << ht.cant_pasajeros_parada_anterior << endl;
+						cout << "        Recorrido: " << recorrido.first << endl;
+						for (const auto &pos_recorrido : recorrido.second)
+						{
+							const HorarioTeorico &ht = pos_recorrido.second;
+							cout << "          Pos recorrido: " << pos_recorrido.first << endl;
+							cout << "            Delay: " << ht.delay << endl;
+							cout << "            Boletos vendidos: " << ht.cantidad_boletos_vendidos << endl;
+							cout << "            Horario: " << ht.horario << endl;
+							cout << "            Arrancó día anterior: " << (ht.arranco_dia_anterior ? "Sí" : "No") << endl;
+							cout << "            Retraso parada anterior: " << ht.retraso_acumulado << endl;
+							cout << "            Cant. boletos parada anterior: " << ht.cant_pasajeros_parada_anterior << endl;
+						}
 					}
 				}
 			}

@@ -97,27 +97,31 @@ int main(int argc, char *argv[])
     {
       int dia_semana = obtener_dia_semana(viaje.fecha_evento);
 
-      auto linea_it = lista_horarios_teoricos_parada.find(viaje.sevar_codigo);
+      auto linea_it = lista_horarios_teoricos_parada.find(viaje.dsc_linea);
       if (linea_it != lista_horarios_teoricos_parada.end())
       {
-        auto dia_it = linea_it->second.find(dia_semana);
-        if (dia_it != linea_it->second.end())
+        auto variante_it = linea_it->second.find(viaje.sevar_codigo);
+        if (variante_it != linea_it->second.end())
         {
-          auto parada_it = dia_it->second.find(viaje.codigo_parada_origen);
-          if (parada_it != dia_it->second.end())
+          auto dia_it = variante_it->second.find(dia_semana);
+          if (dia_it != variante_it->second.end())
           {
-            auto recorrido_it = parada_it->second.find(viaje.recorrido);
-            if (recorrido_it != parada_it->second.end())
+            auto parada_it = dia_it->second.find(viaje.codigo_parada_origen);
+            if (parada_it != dia_it->second.end())
             {
-              auto &pos_recorrido_map = recorrido_it->second;
-              auto pos_recorrido_it = pos_recorrido_map.find(viaje.pos_recorrido);
-              if (pos_recorrido_it != pos_recorrido_map.end())
+              auto recorrido_it = parada_it->second.find(viaje.recorrido);
+              if (recorrido_it != parada_it->second.end())
               {
-                HorarioTeorico &horario_teorico = pos_recorrido_it->second;
-                horario_teorico.cantidad_boletos_vendidos++;
-                if (horario_teorico.delay == -1 || viaje.delay < horario_teorico.delay)
+                auto &pos_recorrido_map = recorrido_it->second;
+                auto pos_recorrido_it = pos_recorrido_map.find(viaje.pos_recorrido);
+                if (pos_recorrido_it != pos_recorrido_map.end())
                 {
-                  horario_teorico.delay = viaje.delay;
+                  HorarioTeorico &horario_teorico = pos_recorrido_it->second;
+                  horario_teorico.cantidad_boletos_vendidos++;
+                  if (horario_teorico.delay == -1 || viaje.delay < horario_teorico.delay)
+                  {
+                    horario_teorico.delay = viaje.delay;
+                  }
                 }
               }
             }
