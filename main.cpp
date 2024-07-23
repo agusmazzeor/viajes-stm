@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     // Iniciar el temporizador
     auto start_time = high_resolution_clock::now();
 
-    LineaMap lista_horarios_teoricos_parada = procesar_horarios_teoricos(LINEA_OMNIBUS);
+    LineaMap lista_horarios_teoricos_parada = procesar_horarios_teoricos();
 
     // Serializar el mapa
     string horarios_teoricos_serializados;
@@ -156,13 +156,6 @@ int main(int argc, char *argv[])
                 ht.retraso_acumulado = retraso_acumulado_anterior;
                 ht.cant_pasajeros_parada_anterior = cant_pasajeros_parada_anterior;
 
-                cout << "Variante: " << variante.first << endl;
-                cout << "Parada: " << parada.first << endl;
-                cout << "recorrido: " << recorrido.first << endl;
-                cout << "pos_recorrido: " << pos_recorrido.first << endl;
-                cout << "delay: " << ht.delay << endl;
-                cout << "retraso_parada_anterior: " << retraso_acumulado_anterior << endl;
-                cout << "------------------------" << endl;
                 // Actualizar los valores acumulados para la siguiente parada
                 retraso_acumulado_anterior = ht.delay;
                 cant_pasajeros_parada_anterior = ht.cantidad_boletos_vendidos;

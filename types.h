@@ -6,8 +6,6 @@
 
 using namespace std;
 
-const string LINEA_OMNIBUS = "144";
-
 const string DATOS_VIAJES = "datos_dummy/05_2024_viajes.csv";
 const string HORARIOS_POR_PARADA = "datos_dummy/horarios_por_parada.csv";
 const string PARADAS = "datos_dummy/paradas.csv";

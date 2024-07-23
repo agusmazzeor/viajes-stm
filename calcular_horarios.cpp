@@ -1,16 +1,16 @@
 #include "calcular_horarios.h"
 
-vector<string> obtener_variantes_de_linea(string linea)
+unordered_map<string, vector<string>> obtener_lineas_y_variantes()
 {
 	string ruta_archivo_paradas = PARADAS;
-	vector<string> variantes_de_linea;
+	unordered_map<string, vector<string>> lineas_con_variantes;
 	string line;
 
 	ifstream archivo_paradas(ruta_archivo_paradas);
 	if (!archivo_paradas.is_open())
 	{
 		cerr << "No se pudo abrir el archivo: " << ruta_archivo_paradas << endl;
-		return variantes_de_linea;
+		return lineas_con_variantes;
 	}
 
 	// Ignorar la primera línea del encabezado
@@ -19,23 +19,23 @@ vector<string> obtener_variantes_de_linea(string linea)
 		while (getline(archivo_paradas, line))
 		{
 			vector<string> tokens = split(line, ',');
-			if (tokens[1] == linea) // desc_linea
-			{
-				variantes_de_linea.push_back(tokens[2]); // cod_varian
-			};
-		};
-	};
+			string desc_linea = tokens[1];	 // desc_linea
+			string cod_variante = tokens[2]; // cod_varian
+			lineas_con_variantes[desc_linea].push_back(cod_variante);
+		}
+	}
 
 	archivo_paradas.close();
-	return variantes_de_linea;
-};
+	return lineas_con_variantes;
+}
 
-// Función para procesar los horarios teóricos
-LineaMap procesar_horarios_teoricos(string linea_omnibus)
+LineaMap procesar_horarios_teoricos()
 {
 	string ruta_archivo_horarios_teoricos = HORARIOS_POR_PARADA;
 	LineaMap lista_horarios_teoricos_parada;
-	vector<string> vars_de_linea_a_evaluar = obtener_variantes_de_linea(linea_omnibus);
+
+	// Obtener todas las líneas únicas con sus variantes
+	unordered_map<string, vector<string>> lineas_con_variantes = obtener_lineas_y_variantes();
 
 	ifstream archivo_horarios_teoricos(ruta_archivo_horarios_teoricos);
 	if (!archivo_horarios_teoricos.is_open())
@@ -54,24 +54,33 @@ LineaMap procesar_horarios_teoricos(string linea_omnibus)
 		}
 
 		string variante = horario_teorico[1]; // cod_variante
-		if (find(vars_de_linea_a_evaluar.begin(), vars_de_linea_a_evaluar.end(), variante) != vars_de_linea_a_evaluar.end())
+
+		// Buscar la línea correspondiente a esta variante
+		for (const auto &linea_variante : lineas_con_variantes)
 		{
-			int id_tipo_dia = stoi(horario_teorico[0]);						 // tipo_dia
-			string id_recorrido = horario_teorico[2];							 // frecuencia
-			string id_parada = horario_teorico[3];								 // cod_ubic_parada
-			int pos_recorrido = stoi(horario_teorico[4]);					 // ordinal
-			string horario = horario_teorico[5];									 // hora
-			bool arranco_dia_anterior = horario_teorico[6] == "1"; // dia_anterior
+			const string &linea_omnibus = linea_variante.first;
+			const vector<string> &variantes = linea_variante.second;
 
-			HorarioTeorico ht;
-			ht.delay = -1;
-			ht.cantidad_boletos_vendidos = 0;
-			ht.horario = horario;
-			ht.arranco_dia_anterior = arranco_dia_anterior;
-			ht.retraso_acumulado = -1;
-			ht.cant_pasajeros_parada_anterior = 0;
+			if (find(variantes.begin(), variantes.end(), variante) != variantes.end())
+			{
+				int id_tipo_dia = stoi(horario_teorico[0]);						 // tipo_dia
+				string id_recorrido = horario_teorico[2];							 // frecuencia
+				string id_parada = horario_teorico[3];								 // cod_ubic_parada
+				int pos_recorrido = stoi(horario_teorico[4]);					 // ordinal
+				string horario = horario_teorico[5];									 // hora
+				bool arranco_dia_anterior = horario_teorico[6] == "1"; // dia_anterior
 
-			lista_horarios_teoricos_parada[linea_omnibus][variante][id_tipo_dia][id_parada][id_recorrido][pos_recorrido] = ht;
+				HorarioTeorico ht;
+				ht.delay = -1;
+				ht.cantidad_boletos_vendidos = 0;
+				ht.horario = horario;
+				ht.arranco_dia_anterior = arranco_dia_anterior;
+				ht.retraso_acumulado = -1;
+				ht.cant_pasajeros_parada_anterior = 0;
+
+				lista_horarios_teoricos_parada[linea_omnibus][variante][id_tipo_dia][id_parada][id_recorrido][pos_recorrido] = ht;
+				break; // Una vez encontrada la línea, no es necesario seguir buscando
+			}
 		}
 	}
 
