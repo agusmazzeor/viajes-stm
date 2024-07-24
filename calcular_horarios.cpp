@@ -18,7 +18,7 @@ unordered_map<string, vector<string>> obtener_lineas_y_variantes()
 	{
 		cerr << "No se pudo abrir el archivo: " << ruta_archivo_paradas << endl;
 		return lineas_con_variantes;
-	}
+	};
 
 	// Ignorar la primera línea del encabezado
 	if (getline(archivo_paradas, line))
@@ -29,12 +29,12 @@ unordered_map<string, vector<string>> obtener_lineas_y_variantes()
 			string desc_linea = tokens[1];	 // desc_linea
 			string cod_variante = tokens[2]; // cod_varian
 			lineas_con_variantes[desc_linea].push_back(cod_variante);
-		}
-	}
+		};
+	};
 
 	archivo_paradas.close();
 	return lineas_con_variantes;
-}
+};
 
 LineaMap procesar_horarios_teoricos()
 {
@@ -49,7 +49,7 @@ LineaMap procesar_horarios_teoricos()
 	{
 		cerr << "No se pudo abrir el archivo: " << ruta_archivo_horarios_teoricos << endl;
 		return lista_horarios_teoricos_parada;
-	}
+	};
 
 	string linea;
 	while (getline(archivo_horarios_teoricos, linea))
@@ -58,7 +58,7 @@ LineaMap procesar_horarios_teoricos()
 		if (horario_teorico.size() < 7)
 		{
 			continue; // Saltar líneas mal formateadas
-		}
+		};
 
 		string variante = horario_teorico[1]; // cod_variante
 
@@ -87,9 +87,9 @@ LineaMap procesar_horarios_teoricos()
 
 				lista_horarios_teoricos_parada[linea_omnibus][variante][id_tipo_dia][id_parada][id_recorrido][pos_recorrido] = ht;
 				break; // Una vez encontrada la línea, no es necesario seguir buscando
-			}
-		}
-	}
+			};
+		};
+	};
 
 	archivo_horarios_teoricos.close();
 	return lista_horarios_teoricos_parada;
@@ -121,7 +121,7 @@ int obtener_dia_semana(const string &horario_real)
 	else
 	{
 		return 1; // Día hábil
-	}
+	};
 };
 
 string convertir_fecha_a_hmm(const string &fecha_hora)
@@ -136,7 +136,7 @@ string convertir_fecha_a_hmm(const string &fecha_hora)
 	ostringstream oss;
 	oss << horas << setfill('0') << setw(2) << minutos;
 	return oss.str();
-}
+};
 
 int convertir_hmm_a_minutos(const string &horario_hmm)
 {
@@ -164,10 +164,10 @@ int convertir_hmm_a_minutos(const string &horario_hmm)
 		break;
 	default:
 		throw out_of_range("La cadena de entrada no tiene el formato esperado: " + horario_hmm);
-	}
+	};
 
 	return horas * 60 + minutos;
-}
+};
 
 void encontrar_recorrido_y_calcular_delay(DataViaje &v, const LineaMap &horarios_linea)
 {
@@ -213,23 +213,23 @@ void encontrar_recorrido_y_calcular_delay(DataViaje &v, const LineaMap &horarios
 						min_diff = diff;
 						nearest_recorrido = recorrido.first;
 						nearest_pos_recorrido = pos_recorrido.first;
-					}
-				}
+					};
+				};
 			}
 			catch (const out_of_range &e)
 			{
 				cerr << "Error al convertir horario a minutos: " << e.what() << endl;
-			}
-		}
-	}
+			};
+		};
+	};
 
 	if (!nearest_recorrido.empty() && nearest_pos_recorrido != -1)
 	{
 		v.recorrido = nearest_recorrido;
 		v.pos_recorrido = nearest_pos_recorrido;
 		v.delay = min_diff;
-	}
-}
+	};
+};
 
 void procesar_viajes(const string &filename, vector<DataViaje> &data, int start, int count, const LineaMap &horarios_linea)
 {
@@ -243,7 +243,7 @@ void procesar_viajes(const string &filename, vector<DataViaje> &data, int start,
 		for (int i = 0; i < start; ++i)
 		{
 			getline(file, line);
-		}
+		};
 
 		// Leer las líneas del chunk
 		for (int i = 0; i < count; ++i)
@@ -267,9 +267,9 @@ void procesar_viajes(const string &filename, vector<DataViaje> &data, int start,
 					if (!viaje.recorrido.empty())
 					{
 						data.push_back(viaje);
-					}
-				}
-			}
-		}
-	}
-}
+					};
+				};
+			};
+		};
+	};
+};
