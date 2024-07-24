@@ -4,8 +4,12 @@
 #include <unordered_set>
 #include <iomanip>
 #include <limits>
+#include <unordered_map>
+#include <algorithm> // Necesario para std::find
 #include "types.h"
 #include "funciones_auxiliares.h"
+
+using namespace std;
 
 unordered_map<string, vector<string>> obtener_lineas_y_variantes()
 {
