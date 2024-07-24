@@ -1,4 +1,9 @@
 #include "serializers.h"
+#include <sstream>
+#include <vector>
+#include <unordered_map>
+#include "types.h"
+#include "funciones_auxiliares.h"
 
 void serialize_horarios_teoricos(const LineaMap &schedule, string &output)
 {

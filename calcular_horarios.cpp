@@ -1,4 +1,11 @@
 #include "calcular_horarios.h"
+#include <string>
+#include <vector>
+#include <unordered_set>
+#include <iomanip>
+#include <limits>
+#include "types.h"
+#include "funciones_auxiliares.h"
 
 unordered_map<string, vector<string>> obtener_lineas_y_variantes()
 {

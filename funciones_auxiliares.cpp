@@ -1,4 +1,9 @@
 #include "funciones_auxiliares.h"
+#include <sstream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include "types.h"
 
 vector<string> split(const string &s, char delimiter)
 {
