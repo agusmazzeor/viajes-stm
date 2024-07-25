@@ -6,10 +6,10 @@
 
 using namespace std;
 
-const string DATOS_VIAJES = "datos_dummy/05_2024_viajes.csv";
+const string DATOS_VIAJES = "datos_dummy/05_2024_viajes_reducido.csv";
 const string HORARIOS_POR_PARADA = "datos_dummy/horarios_por_parada.csv";
 const string PARADAS = "datos_dummy/paradas.csv";
-// const string DATOS_VIAJES = "datos/viajes/viajes_stm_052024.csv";
+// const string DATOS_VIAJES = "datos/viajes/viajes_stm_052024_reducido.csv";
 // const string HORARIOS_POR_PARADA = "datos/horarios_teoricos/horarios_por_parada.csv";
 // const string PARADAS = "datos/paradas/paradas.csv";
 
