@@ -257,7 +257,7 @@ void procesar_viajes(const string &filename, vector<DataViaje> &data, int start,
 				vector<string> tokens = split(line, ',');
 				DataViaje viaje;
 
-				viaje.dsc_linea = tokens[6];
+				viaje.dsc_linea = tokens[5];
 				// Agregar solo si dsc_linea está en lineas_a_evaluar
 				if (horarios_linea.find(viaje.dsc_linea) != horarios_linea.end())
 				{
@@ -265,8 +265,8 @@ void procesar_viajes(const string &filename, vector<DataViaje> &data, int start,
 					viaje.cantidad_pasajeros = tokens[1];
 					viaje.codigo_parada_origen = tokens[2];
 					viaje.cod_empresa = tokens[3];
-					viaje.linea_codigo = tokens[5];
-					viaje.sevar_codigo = tokens[7];
+					viaje.linea_codigo = tokens[4];
+					viaje.sevar_codigo = tokens[6];
 					encontrar_recorrido_y_calcular_delay(viaje, horarios_linea);
 					if (!viaje.recorrido.empty())
 					{
