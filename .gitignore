@@ -39,4 +39,5 @@ datos/viajes/viajes_stm_052024_reducido.csv
 datos/recorridos_bus.csv
 datos/uptu_pasada_circular.csv
 datos/uptu_pasada_circular.zip
+datos/viajes_stm.csv
 bin/main
