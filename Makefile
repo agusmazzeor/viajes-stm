@@ -21,18 +21,19 @@ OBJS = $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o) $(OBJDIR)/main.o
 
 # Regla para compilar el proyecto
 all: $(TARGET)
+	@echo "Compiling..."
 
 # Regla para compilar el ejecutable
 $(TARGET): $(OBJS) | $(BINDIR)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	@$(CXX) $(CXXFLAGS) -o $@ $^
 
 # Regla para compilar los archivos objeto del directorio src
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(HEADERS) | $(OBJDIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Regla para compilar el archivo main.cpp
 $(OBJDIR)/main.o: main.cpp $(HEADERS) | $(OBJDIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Regla para crear el directorio de objetos
 $(OBJDIR):
