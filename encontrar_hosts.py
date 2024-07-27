@@ -9,12 +9,19 @@ def ssh_successful(host):
         # Check if SSH port (22) is open
         result = subprocess.run(["nc", "-zv", host, "22"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if result.returncode != 0:
+            print(f"Port check failed for {host}: {result.stderr.decode()}")
             return False
-        # Try SSH connection with a timeout of 2 seconds and in BatchMode
-        result = subprocess.run(["ssh", "-o", "ConnectTimeout=2", "-o", "BatchMode=yes", host, "exit"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # Try SSH connection with a timeout of 2 seconds, in BatchMode, and accept new host keys automatically
+        result = subprocess.run(
+            ["ssh", "-o", "ConnectTimeout=2", "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=no", host, "exit"],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         print(f"Return code: {result.returncode}")
+        print(f"stdout: {result.stdout.decode()}")
+        print(f"stderr: {result.stderr.decode()}")
         return result.returncode == 0
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as e:
+        print(f"Error connecting to {host}: {e}")
         return False
 
 def main():
@@ -31,7 +38,7 @@ def main():
         # Verifica cada host y lo escribe en el archivo si puedo hacer ssh
         for host in maquinas:
             if ssh_successful(host):
-                print(host)
+                print(f"Connected to: {host}")
                 file.write(host + "\n")
                 file.flush()  # Forzar escritura a disco
 
