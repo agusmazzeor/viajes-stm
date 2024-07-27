@@ -7,10 +7,10 @@
 #include <map>
 #include <unordered_map>
 #include <chrono>
-#include "types.h"
-#include "calcular_horarios.h"
-#include "funciones_auxiliares.h"
-#include "serializers.h"
+#include "src/types.h"
+#include "src/calcular_horarios.h"
+#include "src/funciones_auxiliares.h"
+#include "src/serializers.h"
 
 using namespace std;
 using namespace std::chrono;

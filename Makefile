@@ -7,27 +7,32 @@ CXXFLAGS = -std=c++11 -Wall
 # Directorios de salida
 OBJDIR = obj
 BINDIR = bin
+SRCDIR = src
 
 # Nombre del ejecutable
 TARGET = $(BINDIR)/main
 
 # Archivos fuente y de cabecera
-SRCS = $(wildcard *.cpp)
-HEADERS = $(wildcard *.h)
+SRCS = $(wildcard $(SRCDIR)/*.cpp)
+HEADERS = $(wildcard $(SRCDIR)/*.h)
 
 # Archivos objeto
-OBJS = $(SRCS:%.cpp=$(OBJDIR)/%.o)
+OBJS = $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o) $(OBJDIR)/main.o
 
 # Regla para compilar el proyecto
 all: $(TARGET)
 
 # Regla para compilar el ejecutable
 $(TARGET): $(OBJS) | $(BINDIR)
-	@$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Regla para compilar los archivos objeto
-$(OBJDIR)/%.o: %.cpp $(HEADERS) | $(OBJDIR)
-	@$(CXX) $(CXXFLAGS) -c $< -o $@
+# Regla para compilar los archivos objeto del directorio src
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(HEADERS) | $(OBJDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Regla para compilar el archivo main.cpp
+$(OBJDIR)/main.o: main.cpp $(HEADERS) | $(OBJDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Regla para crear el directorio de objetos
 $(OBJDIR):
