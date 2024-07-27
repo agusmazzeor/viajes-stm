@@ -111,7 +111,7 @@ void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const st
 	file.close();
 }
 
-void guardar_tiempo_de_ejecucion_en_archivo(const int &duration, const string &filename)
+void guardar_tiempo_de_ejecucion_en_archivo(const int &duration, const int &num_processes, const string &filename)
 {
 	ofstream file(filename);
 	if (!file.is_open())
@@ -120,7 +120,7 @@ void guardar_tiempo_de_ejecucion_en_archivo(const int &duration, const string &f
 		return;
 	}
 
-	file << "Tiempo de ejecución total: " << duration << " segundos" << endl;
+	file << "Tiempo de ejecución total: " << duration << " segundos, cant procesos: " << num_processes << endl;
 	file.close();
 }
 
