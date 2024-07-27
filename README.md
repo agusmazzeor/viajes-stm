@@ -16,3 +16,10 @@ Para correr el proyecto en maquinas de facultad, ingresar con tu usuario a una c
 python3 encontrar_hosts.py
 sh ./ejecutar_programa.sh 4
 ```
+
+Para correrlo con varias repeticiones:
+
+```
+python3 encontrar_hosts.py
+sh ./ejecutar_programa_varias_veces.sh 4
+```
