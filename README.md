@@ -21,5 +21,5 @@ Para correrlo con varias repeticiones:
 
 ```
 python3 encontrar_hosts.py
-sh ./ejecutar_programa_varias_veces.sh 4
+sh ./ejecutar_programa_varias_veces.sh
 ```
