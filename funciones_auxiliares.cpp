@@ -113,7 +113,7 @@ void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const st
 
 void guardar_tiempo_de_ejecucion_en_archivo(const int &duration, const int &num_processes, const string &filename)
 {
-	ofstream file(filename);
+	ofstream file(filename, ios::app);
 	if (!file.is_open())
 	{
 		cerr << "Error al abrir el archivo para escribir: " << filename << endl;

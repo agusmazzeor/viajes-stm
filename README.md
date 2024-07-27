@@ -13,5 +13,6 @@ mpirun -np 4 ./bin/main
 Para correr el proyecto en maquinas de facultad, ingresar con tu usuario a una computadora de facultad, dirigirse a la carpeta del proyecto viajes-stm y correr (ej. con 4 nodos):
 
 ```
+python3 encontrar_hosts.py
 sh ./ejecutar_programa.sh 4
 ```

@@ -2,7 +2,6 @@
 
 NP=${1:-4}
 
-python3 encontrar_hosts.py
 module load mpi/mpich-x86_64
 make clean
 make
