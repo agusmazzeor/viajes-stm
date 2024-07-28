@@ -12,7 +12,7 @@ source ~/miniconda3/bin/activate
 conda activate cpp_env
 module load mpi/mpich-3.2-x86_64
 
-for EJECUCION in 1 2 3
+for EJECUCION in 1
 do
 	echo "Ejecucion $EJECUCION"
 	echo "1 proceso con 16gb de RAM"

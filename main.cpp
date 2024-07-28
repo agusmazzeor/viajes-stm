@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
   if (rank == 0)
   {
     // Master process
+    cout << "Ejecutando: " << size << endl;
 
     // Iniciar el temporizador
     auto start_time = high_resolution_clock::now();
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])
       MPI_Send(&schedule_size, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
     }
 
+    cout << "Enviando desde master: " << schedule_size << endl;
     // Enviar el mapa serializado de los horarios teoricos
     for (int i = 1; i < size; ++i)
     {
@@ -214,6 +216,7 @@ int main(int argc, char *argv[])
     int viajes_size = viajes_serializados.size();
 
     MPI_Send(&viajes_size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    cout << "Enviando desde slave: " << rank << ", count: " << viajes_size << endl;
     MPI_Send(viajes_serializados.data(), viajes_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
 
     // cout << "---> Termine proceso con rank: " << rank << ", con cantidad de viajes: " << viajes.size() << endl;
