@@ -8,7 +8,8 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=natitenreiro@gmail.com
 
-source /etc/profile.d/modules.sh
+source ~/miniconda3/bin/activate
+conda activate cpp_env
 module load mpi/mpich-3.2-x86_64
 
 for EJECUCION in 1 2 3
