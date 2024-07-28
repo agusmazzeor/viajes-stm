@@ -14,12 +14,12 @@ Para correr el proyecto en maquinas de facultad, ingresar con tu usuario a una c
 
 ```
 python3 scripts_python/encontrar_hosts.py
-sh ./ejecutar_programa.sh 4
+sh ./ejecucion_pcunix/ejecutar_programa.sh 4
 ```
 
 Para correrlo con varias repeticiones:
 
 ```
 python3 scripts_python/encontrar_hosts.py
-sh ./ejecutar_programa_varias_veces.sh
+sh ./ejecucion_pcunix/ejecutar_programa_varias_veces.sh
 ```
