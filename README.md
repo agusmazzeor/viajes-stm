@@ -13,13 +13,13 @@ mpirun -np 4 ./bin/main
 Para correr el proyecto en maquinas de facultad, ingresar con tu usuario a una computadora de facultad, dirigirse a la carpeta del proyecto viajes-stm y correr (ej. con 4 nodos):
 
 ```
-python3 encontrar_hosts.py
+python3 scripts_python/encontrar_hosts.py
 sh ./ejecutar_programa.sh 4
 ```
 
 Para correrlo con varias repeticiones:
 
 ```
-python3 encontrar_hosts.py
+python3 scripts_python/encontrar_hosts.py
 sh ./ejecutar_programa_varias_veces.sh
 ```
