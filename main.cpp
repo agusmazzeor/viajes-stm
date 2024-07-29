@@ -44,26 +44,27 @@ int main(int argc, char *argv[])
       MPI_Send(&schedule_size, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
     }
 
-    cout << "Enviando desde master: " << schedule_size << endl;
+    cout << "Master --> cant horarios teoricos: " << schedule_size << endl;
     // Enviar el mapa serializado de los horarios teoricos
     for (int i = 1; i < size; ++i)
     {
       MPI_Send(horarios_teoricos_serializados.data(), schedule_size, MPI_CHAR, i, 0, MPI_COMM_WORLD);
     }
 
+    cout << "Master --> termine de mandar horarios teoricos" << endl;
     // Calcular chunks para procesar los viajes en los procesos esclavos
     ifstream file(DATOS_VIAJES);
     string line;
-    int total_lines = 0;
+    int total_lines = 1000000;
 
     // Contar el número total de líneas (excluyendo el encabezado)
-    if (getline(file, line))
-    {
-      while (getline(file, line))
-      {
-        ++total_lines;
-      }
-    }
+    // if (getline(file, line))
+    // {
+    //   while (getline(file, line))
+    //   {
+    //     ++total_lines;
+    //   }
+    // }
 
     int chunk_size = total_lines / (size - 1);
     int remainder = total_lines % (size - 1);
@@ -76,6 +77,7 @@ int main(int argc, char *argv[])
         end += remainder; // El último chunk incluye el remanente
 
       int count = end - start;
+      cout << "Master --> viajes para el esclavo: start: " << start << ", count: " << count << endl;
       MPI_Send(&start, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
       MPI_Send(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
     }
@@ -84,6 +86,7 @@ int main(int argc, char *argv[])
     vector<DataViaje> all_viajes;
     for (int i = 1; i < size; ++i)
     {
+      cout << "Master --> esperando recibir viajes" << endl;
       int viajes_size;
       MPI_Recv(&viajes_size, 1, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       vector<char> viajes_buffer(viajes_size);
@@ -94,6 +97,7 @@ int main(int argc, char *argv[])
       all_viajes.insert(all_viajes.end(), viajes.begin(), viajes.end());
     }
 
+    cout << "Master --> termine de recibir viajes" << endl;
     // Actualizar `cantidad_boletos_vendidos` y `delay` en `lista_horarios_teoricos_parada`
     for (const auto &viaje : all_viajes)
     {
@@ -194,10 +198,12 @@ int main(int argc, char *argv[])
     // Recibir el tamaño del mapa serializado
     int schedule_size;
     MPI_Recv(&schedule_size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
+    cout << "Esclavo(" << rank << ") --> recibiendo horarios teoricos" << endl;
     // Recibir el mapa serializado
     vector<char> buffer(schedule_size);
     MPI_Recv(buffer.data(), schedule_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+    cout << "Esclavo(" << rank << ") --> termine de recibir horarios teoricos" << endl;
 
     // Deserializar el mapa
     LineaMap lista_horarios_teoricos_parada;
@@ -208,15 +214,17 @@ int main(int argc, char *argv[])
     MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     MPI_Recv(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
+    cout << "Esclavo(" << rank << ") --> me toca procesar en los viajes: start: " << start << ", count: " << count << endl;
     vector<DataViaje> viajes;
     procesar_viajes(DATOS_VIAJES, viajes, start, count, lista_horarios_teoricos_parada);
 
+    cout << "Esclavo(" << rank << ") ---> cantidad viajes: " << viajes.size() << endl;
     // Serializar los datos de los viajes
     string viajes_serializados = serialize_viajes(viajes);
     int viajes_size = viajes_serializados.size();
 
     MPI_Send(&viajes_size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-    cout << "Enviando desde slave: " << rank << ", count: " << viajes_size << endl;
+    cout << "Esclavo(" << rank << ") ---> enviando viajes serializados: " << viajes.size() << endl;
     MPI_Send(viajes_serializados.data(), viajes_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
 
     // cout << "---> Termine proceso con rank: " << rank << ", con cantidad de viajes: " << viajes.size() << endl;
