@@ -56,17 +56,20 @@ int main(int argc, char *argv[])
     // Calcular chunks para procesar los viajes en los procesos esclavos
     ifstream file(DATOS_VIAJES);
     string line;
-    // int total_lines = 0;
-    int total_lines = 1000000;
+    int total_lines = 0;
 
     // Contar el número total de líneas (excluyendo el encabezado)
-    // if (getline(file, line))
-    // {
-    //   while (getline(file, line))
-    //   {
-    //     ++total_lines;
-    //   }
-    // }
+    if (getline(file, line))
+    {
+      while (getline(file, line))
+      {
+        ++total_lines;
+      }
+    }
+
+    vector<int> v;
+    cout << "Master      --> total_lines: " << total_lines << endl;
+    cout << "Master      --> max_size() of vector<int>: " << v.max_size() << endl;
 
     int chunk_size = total_lines / (size - 1);
     int remainder = total_lines % (size - 1);
@@ -226,6 +229,7 @@ int main(int argc, char *argv[])
     string viajes_serializados = serialize_viajes(viajes);
     int viajes_size = viajes_serializados.size();
 
+    cout << "Esclavo (" << rank << ") --> enviando viajes_size: " << viajes_size << endl;
     MPI_Send(&viajes_size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
     cout << "Esclavo (" << rank << ") --> enviando viajes serializados: " << viajes.size() << endl;
     MPI_Send(viajes_serializados.data(), viajes_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
