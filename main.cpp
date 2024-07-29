@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     // Calcular chunks para procesar los viajes en los procesos esclavos
     ifstream file(DATOS_VIAJES);
     string line;
-    int total_lines = 1000000;
+    int total_lines = 10000;
 
     // Contar el número total de líneas (excluyendo el encabezado)
     // if (getline(file, line))
