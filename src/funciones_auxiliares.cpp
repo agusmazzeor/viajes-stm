@@ -43,17 +43,17 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 						{
 							const HorarioTeorico &horario = pos_recorrido.second;
 							file << linea.first << ","
-									 << variante.first << ","
-									 << dia.first << ","
-									 << parada.first << ","
-									 << recorrido.first << ","
-									 << pos_recorrido.first << ","
-									 << horario.delay << ","
-									 << horario.cantidad_boletos_vendidos << ","
-									 << horario.horario << ","
-									 << horario.arranco_dia_anterior << ","
-									 << horario.retraso_acumulado << ","
-									 << horario.cant_pasajeros_parada_anterior << endl;
+								 << variante.first << ","
+								 << dia.first << ","
+								 << parada.first << ","
+								 << recorrido.first << ","
+								 << pos_recorrido.first << ","
+								 << horario.delay << ","
+								 << horario.cantidad_boletos_vendidos << ","
+								 << horario.horario << ","
+								 << horario.arranco_dia_anterior << ","
+								 << horario.retraso_acumulado << ","
+								 << horario.cant_pasajeros_parada_anterior << endl;
 						}
 					}
 				}
@@ -90,17 +90,17 @@ void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const st
 						{
 							const HorarioTeorico &horario = parada.second;
 							file << linea.first << ","
-									 << variante.first << ","
-									 << dia.first << ","
-									 << parada.first << ","
-									 << recorrido.first << ","
-									 << pos_recorrido.first << ","
-									 << horario.delay << ","
-									 << horario.cantidad_boletos_vendidos << ","
-									 << horario.horario << ","
-									 << horario.arranco_dia_anterior << ","
-									 << horario.retraso_acumulado << ","
-									 << horario.cant_pasajeros_parada_anterior << endl;
+								 << variante.first << ","
+								 << dia.first << ","
+								 << parada.first << ","
+								 << recorrido.first << ","
+								 << pos_recorrido.first << ","
+								 << horario.delay << ","
+								 << horario.cantidad_boletos_vendidos << ","
+								 << horario.horario << ","
+								 << horario.arranco_dia_anterior << ","
+								 << horario.retraso_acumulado << ","
+								 << horario.cant_pasajeros_parada_anterior << endl;
 						}
 					}
 				}
@@ -111,7 +111,7 @@ void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const st
 	file.close();
 }
 
-void guardar_tiempo_de_ejecucion_en_archivo(const int &duration, const int &num_processes, const string &filename)
+void guardar_tiempo_de_ejecucion_en_archivo(const int &duration, const int &num_processes, const string &filename, const string &tipo_tiempo)
 {
 	ofstream file(filename, ios::app);
 	if (!file.is_open())
@@ -120,7 +120,7 @@ void guardar_tiempo_de_ejecucion_en_archivo(const int &duration, const int &num_
 		return;
 	}
 
-	file << "Tiempo de ejecución total: " << duration << " minutos, cant procesos: " << num_processes << endl;
+	file << "Tipo de tiempo: " << tipo_tiempo << ", Tiempo de ejecución total: " << duration << " minutos, cant procesos: " << num_processes << endl;
 	file.close();
 }
 

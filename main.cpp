@@ -38,6 +38,12 @@ int main(int argc, char *argv[])
     string horarios_teoricos_serializados;
     serialize_horarios_teoricos(lista_horarios_teoricos_parada, horarios_teoricos_serializados);
 
+    auto end_time_pre = high_resolution_clock::now();
+    auto duration_pre = duration_cast<minutes>(end_time_pre - start_time);
+    cout << "Tiempo de preprocesamiento: " << duration_pre.count() << " minutos" << endl;
+    guardar_tiempo_de_ejecucion_en_archivo(duration_pre.count(), size, "resultado/tiempo_de_ejecucion.txt", "preprocesamiento");
+
+    auto start_time_procesamiento = high_resolution_clock::now();
     // Enviar el tamaño del mapa serializado
     int schedule_size = horarios_teoricos_serializados.size();
     for (int i = 1; i < size; ++i)
@@ -101,6 +107,10 @@ int main(int argc, char *argv[])
       vector<DataViaje> viajes = deserialize_viajes(viajes_serializados);
       all_viajes.insert(all_viajes.end(), viajes.begin(), viajes.end());
     }
+    auto end_time_procesamiento = high_resolution_clock::now();
+    auto duration_procesamiento = duration_cast<minutes>(end_time_procesamiento - start_time_procesamiento);
+    cout << "Tiempo de procesamiento: " << duration_procesamiento.count() << " minutos" << endl;
+    guardar_tiempo_de_ejecucion_en_archivo(duration_procesamiento.count(), size, "resultado/tiempo_de_ejecucion.txt", "procesamiento");
 
     cout << "Master      --> termine de recibir viajes" << endl;
     // Actualizar `cantidad_boletos_vendidos` y `delay` en `lista_horarios_teoricos_parada`
@@ -195,7 +205,7 @@ int main(int argc, char *argv[])
     auto end_time = high_resolution_clock::now();
     auto duration = duration_cast<minutes>(end_time - start_time);
     cout << "Tiempo de ejecución total: " << duration.count() << " minutos, cant procesos: " << size << endl;
-    guardar_tiempo_de_ejecucion_en_archivo(duration.count(), size, "resultado/tiempo_de_ejecucion.txt");
+    guardar_tiempo_de_ejecucion_en_archivo(duration.count(), size, "resultado/tiempo_de_ejecucion.txt", "total");
   }
   else
   {
