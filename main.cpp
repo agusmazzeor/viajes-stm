@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     ifstream file(DATOS_VIAJES);
     string line;
     // int total_lines = 0;
-    int total_lines = 100000;
+    int total_lines = 1000000;
 
     // Contar el número total de líneas (excluyendo el encabezado)
     // if (getline(file, line))
