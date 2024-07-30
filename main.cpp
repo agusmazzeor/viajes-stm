@@ -237,7 +237,7 @@ int main(int argc, char *argv[])
     cout << "Esclavo (" << rank << ") --> cantidad viajes: " << viajes.size() << endl;
     // Serializar los datos de los viajes
     string viajes_serializados = serialize_viajes(viajes);
-    int viajes_size = viajes_serializados.size();
+    size_t viajes_size = viajes_serializados.size();
 
     cout << "Esclavo (" << rank << ") --> enviando viajes_size: " << viajes_size << endl;
     MPI_Send(&viajes_size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
