@@ -1,5 +1,6 @@
 #include "funciones_auxiliares.h"
 #include <sstream>
+#include <unistd.h>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -43,17 +44,17 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 						{
 							const HorarioTeorico &horario = pos_recorrido.second;
 							file << linea.first << ","
-									 << variante.first << ","
-									 << dia.first << ","
-									 << parada.first << ","
-									 << recorrido.first << ","
-									 << pos_recorrido.first << ","
-									 << horario.delay << ","
-									 << horario.cantidad_boletos_vendidos << ","
-									 << horario.horario << ","
-									 << horario.arranco_dia_anterior << ","
-									 << horario.retraso_acumulado << ","
-									 << horario.cant_pasajeros_parada_anterior << endl;
+								 << variante.first << ","
+								 << dia.first << ","
+								 << parada.first << ","
+								 << recorrido.first << ","
+								 << pos_recorrido.first << ","
+								 << horario.delay << ","
+								 << horario.cantidad_boletos_vendidos << ","
+								 << horario.horario << ","
+								 << horario.arranco_dia_anterior << ","
+								 << horario.retraso_acumulado << ","
+								 << horario.cant_pasajeros_parada_anterior << endl;
 						}
 					}
 				}
@@ -90,17 +91,17 @@ void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const st
 						{
 							const HorarioTeorico &horario = parada.second;
 							file << linea.first << ","
-									 << variante.first << ","
-									 << dia.first << ","
-									 << parada.first << ","
-									 << recorrido.first << ","
-									 << pos_recorrido.first << ","
-									 << horario.delay << ","
-									 << horario.cantidad_boletos_vendidos << ","
-									 << horario.horario << ","
-									 << horario.arranco_dia_anterior << ","
-									 << horario.retraso_acumulado << ","
-									 << horario.cant_pasajeros_parada_anterior << endl;
+								 << variante.first << ","
+								 << dia.first << ","
+								 << parada.first << ","
+								 << recorrido.first << ","
+								 << pos_recorrido.first << ","
+								 << horario.delay << ","
+								 << horario.cantidad_boletos_vendidos << ","
+								 << horario.horario << ","
+								 << horario.arranco_dia_anterior << ","
+								 << horario.retraso_acumulado << ","
+								 << horario.cant_pasajeros_parada_anterior << endl;
 						}
 					}
 				}
@@ -207,3 +208,17 @@ void combinar_linea_maps(LineaMap &dest, const LineaMap &src)
 		}
 	}
 };
+
+string obtener_derectorio_actual()
+{
+	char cwd[1024];
+	if (getcwd(cwd, sizeof(cwd)) != NULL)
+	{
+		return string(cwd);
+	}
+	else
+	{
+		cerr << "Error al obtener el directorio actual" << endl;
+		return "";
+	}
+}

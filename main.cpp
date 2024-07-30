@@ -1,5 +1,6 @@
 #include <mpi.h>
 #include <iostream>
+#include <unistd.h>
 #include <sstream>
 #include <fstream>
 #include <string>
@@ -153,6 +154,12 @@ int main(int argc, char *argv[])
 
     // Guardar `lista_horarios_teoricos_parada` en un archivo
     guardar_linea_map_final_en_archivo(linea_map_final, "resultado/retrasos_de_lineas.csv");
+
+    //  Aca correr estadisticas
+    string current_working_dir = obtener_derectorio_actual();
+    string python_script = current_working_dir + "/scripts_python/estadisticas.py";
+    string command = "python3 " + python_script;
+    system(command.c_str());
 
     // Parar el temporizador
     auto end_time = high_resolution_clock::now();
