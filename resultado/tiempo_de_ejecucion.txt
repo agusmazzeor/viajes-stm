@@ -1,0 +1,3 @@
+Cant procesos: 3, tiempo de ejecucion (minutos): 0, tipo tiempo: preprocesamiento
+Cant procesos: 3, tiempo de ejecucion (minutos): 0, tipo tiempo: procesamiento
+Cant procesos: 3, tiempo de ejecucion (minutos): 0, tipo tiempo: total
