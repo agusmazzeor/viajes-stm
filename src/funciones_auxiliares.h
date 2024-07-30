@@ -16,5 +16,6 @@ void print_data_linea(LineaMap &lista_horarios_teoricos_parada);
 void print_data_viaje(const vector<DataViaje> &data_viajes);
 void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const string &filename);
 void combinar_linea_maps(LineaMap &dest, const LineaMap &src);
+string obtener_derectorio_actual();
 
 #endif // FUNCIONES_AUXILIARES_H
