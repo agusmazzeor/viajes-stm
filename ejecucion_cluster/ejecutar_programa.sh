@@ -16,7 +16,7 @@ for EJECUCION in 1
 do
 	echo "Ejecucion $EJECUCION"
 	echo "1 proceso con 16gb de RAM"
-  make clean
-  make
+	make clean
+	make
 	mpirun -np 3 ./bin/main
 done
