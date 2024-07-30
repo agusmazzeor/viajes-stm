@@ -43,17 +43,17 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 						{
 							const HorarioTeorico &horario = pos_recorrido.second;
 							file << linea.first << ","
-								 << variante.first << ","
-								 << dia.first << ","
-								 << parada.first << ","
-								 << recorrido.first << ","
-								 << pos_recorrido.first << ","
-								 << horario.delay << ","
-								 << horario.cantidad_boletos_vendidos << ","
-								 << horario.horario << ","
-								 << horario.arranco_dia_anterior << ","
-								 << horario.retraso_acumulado << ","
-								 << horario.cant_pasajeros_parada_anterior << endl;
+									 << variante.first << ","
+									 << dia.first << ","
+									 << parada.first << ","
+									 << recorrido.first << ","
+									 << pos_recorrido.first << ","
+									 << horario.delay << ","
+									 << horario.cantidad_boletos_vendidos << ","
+									 << horario.horario << ","
+									 << horario.arranco_dia_anterior << ","
+									 << horario.retraso_acumulado << ","
+									 << horario.cant_pasajeros_parada_anterior << endl;
 						}
 					}
 				}
@@ -90,17 +90,17 @@ void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const st
 						{
 							const HorarioTeorico &horario = parada.second;
 							file << linea.first << ","
-								 << variante.first << ","
-								 << dia.first << ","
-								 << parada.first << ","
-								 << recorrido.first << ","
-								 << pos_recorrido.first << ","
-								 << horario.delay << ","
-								 << horario.cantidad_boletos_vendidos << ","
-								 << horario.horario << ","
-								 << horario.arranco_dia_anterior << ","
-								 << horario.retraso_acumulado << ","
-								 << horario.cant_pasajeros_parada_anterior << endl;
+									 << variante.first << ","
+									 << dia.first << ","
+									 << parada.first << ","
+									 << recorrido.first << ","
+									 << pos_recorrido.first << ","
+									 << horario.delay << ","
+									 << horario.cantidad_boletos_vendidos << ","
+									 << horario.horario << ","
+									 << horario.arranco_dia_anterior << ","
+									 << horario.retraso_acumulado << ","
+									 << horario.cant_pasajeros_parada_anterior << endl;
 						}
 					}
 				}
@@ -177,3 +177,33 @@ void print_data_viaje(const vector<DataViaje> &data_viajes)
 		cout << "------------------------" << endl;
 	}
 }
+
+void combinar_linea_maps(LineaMap &dest, const LineaMap &src)
+{
+	for (const auto &linea : src)
+	{
+		for (const auto &variante : linea.second)
+		{
+			for (const auto &id_tipo_dia : variante.second)
+			{
+				for (const auto &id_parada : id_tipo_dia.second)
+				{
+					for (const auto &id_recorrido : id_parada.second)
+					{
+						for (const auto &pos_recorrido : id_recorrido.second)
+						{
+							const HorarioTeorico &ht_src = pos_recorrido.second;
+							auto &ht_dest = dest[linea.first][variante.first][id_tipo_dia.first][id_parada.first][id_recorrido.first][pos_recorrido.first];
+
+							if (ht_dest.delay == -1 || (ht_src.delay != -1 && ht_src.delay < ht_dest.delay))
+							{
+								ht_dest.delay = ht_src.delay;
+							}
+							ht_dest.cantidad_boletos_vendidos += ht_src.cantidad_boletos_vendidos;
+						}
+					}
+				}
+			}
+		}
+	}
+};

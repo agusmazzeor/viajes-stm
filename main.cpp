@@ -26,11 +26,9 @@ int main(int argc, char *argv[])
   if (rank == 0)
   {
     // Master process
-    cout << "Ejecutando con " << size << " procesos" << endl;
 
     // Iniciar el temporizador
     auto start_time = high_resolution_clock::now();
-    cout << "Master      --> proceso horarios teoricos" << endl;
 
     LineaMap lista_horarios_teoricos_parada = procesar_horarios_teoricos();
 
@@ -51,14 +49,12 @@ int main(int argc, char *argv[])
       MPI_Send(&schedule_size, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
     }
 
-    cout << "Master      --> cant horarios teoricos: " << schedule_size << endl;
     // Enviar el mapa serializado de los horarios teoricos
     for (int i = 1; i < size; ++i)
     {
       MPI_Send(horarios_teoricos_serializados.data(), schedule_size, MPI_CHAR, i, 0, MPI_COMM_WORLD);
     }
 
-    cout << "Master      --> termine de mandar horarios teoricos" << endl;
     // Calcular chunks para procesar los viajes en los procesos esclavos
     ifstream file(DATOS_VIAJES);
     string line;
@@ -74,8 +70,6 @@ int main(int argc, char *argv[])
     }
 
     vector<int> v;
-    cout << "Master      --> total_lines: " << total_lines << endl;
-    cout << "Master      --> max_size() of vector<int>: " << v.max_size() << endl;
 
     int chunk_size = total_lines / (size - 1);
     int remainder = total_lines % (size - 1);
@@ -88,68 +82,28 @@ int main(int argc, char *argv[])
         end += remainder; // El último chunk incluye el remanente
 
       int count = end - start;
-      cout << "Master      --> viajes para el esclavo: start: " << start << ", count: " << count << endl;
       MPI_Send(&start, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
       MPI_Send(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
     }
 
     // Obtener los resultados de los esclavos
-    vector<DataViaje> all_viajes;
     for (int i = 1; i < size; ++i)
     {
-      cout << "Master      --> esperando recibir viajes" << endl;
       int viajes_size;
       MPI_Recv(&viajes_size, 1, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-      vector<char> viajes_buffer(viajes_size);
-      MPI_Recv(viajes_buffer.data(), viajes_size, MPI_CHAR, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      vector<char> buffer(viajes_size);
+      MPI_Recv(buffer.data(), viajes_size, MPI_CHAR, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-      string viajes_serializados(viajes_buffer.begin(), viajes_buffer.end());
-      vector<DataViaje> viajes = deserialize_viajes(viajes_serializados);
-      all_viajes.insert(all_viajes.end(), viajes.begin(), viajes.end());
+      // Deserializar el mapa
+      LineaMap linea_map_esclavo;
+      string horarios_teoricos_serializados(buffer.begin(), buffer.end());
+      deserialize_horarios_teoricos(horarios_teoricos_serializados, linea_map_esclavo);
+      combinar_linea_maps(lista_horarios_teoricos_parada, linea_map_esclavo);
     }
     auto end_time_procesamiento = high_resolution_clock::now();
     auto duration_procesamiento = duration_cast<minutes>(end_time_procesamiento - start_time_procesamiento);
     cout << "Tiempo de procesamiento: " << duration_procesamiento.count() << " minutos" << endl;
     guardar_tiempo_de_ejecucion_en_archivo(duration_procesamiento.count(), size, "resultado/tiempo_de_ejecucion.txt", "procesamiento");
-
-    cout << "Master      --> termine de recibir viajes" << endl;
-    // Actualizar `cantidad_boletos_vendidos` y `delay` en `lista_horarios_teoricos_parada`
-    for (const auto &viaje : all_viajes)
-    {
-      int dia_semana = obtener_dia_semana(viaje.fecha_evento);
-
-      auto linea_it = lista_horarios_teoricos_parada.find(viaje.dsc_linea);
-      if (linea_it != lista_horarios_teoricos_parada.end())
-      {
-        auto variante_it = linea_it->second.find(viaje.sevar_codigo);
-        if (variante_it != linea_it->second.end())
-        {
-          auto dia_it = variante_it->second.find(dia_semana);
-          if (dia_it != variante_it->second.end())
-          {
-            auto parada_it = dia_it->second.find(viaje.codigo_parada_origen);
-            if (parada_it != dia_it->second.end())
-            {
-              auto recorrido_it = parada_it->second.find(viaje.recorrido);
-              if (recorrido_it != parada_it->second.end())
-              {
-                auto &pos_recorrido_map = recorrido_it->second;
-                auto pos_recorrido_it = pos_recorrido_map.find(viaje.pos_recorrido);
-                if (pos_recorrido_it != pos_recorrido_map.end())
-                {
-                  HorarioTeorico &horario_teorico = pos_recorrido_it->second;
-                  horario_teorico.cantidad_boletos_vendidos++;
-                  if (horario_teorico.delay == -1 || viaje.delay < horario_teorico.delay)
-                  {
-                    horario_teorico.delay = viaje.delay;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
 
     // Recorrer todos los horarios teóricos y actualizar los nuevos campos
     // lista_horarios_teoricos_parada[linea][variante][tipo_dia][parada][recorrido][pos_recorrido]
@@ -198,7 +152,6 @@ int main(int argc, char *argv[])
     // print_data_linea(lista_horarios_teoricos_parada);
 
     // Guardar `lista_horarios_teoricos_parada` en un archivo
-    // guardar_linea_map_en_archivo(lista_horarios_teoricos_parada, "resultado/retrasos_de_lineas.csv");
     guardar_linea_map_final_en_archivo(linea_map_final, "resultado/retrasos_de_lineas.csv");
 
     // Parar el temporizador
@@ -209,17 +162,13 @@ int main(int argc, char *argv[])
   }
   else
   {
-    cout << "Esclavo (" << rank << ")" << endl;
     // Proceso esclavo
     // Recibir el tamaño del mapa serializado
     int schedule_size;
     MPI_Recv(&schedule_size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    cout << "Esclavo (" << rank << ") --> recibiendo horarios teoricos" << endl;
     // Recibir el mapa serializado
     vector<char> buffer(schedule_size);
     MPI_Recv(buffer.data(), schedule_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-    cout << "Esclavo (" << rank << ") --> termine de recibir horarios teoricos" << endl;
 
     // Deserializar el mapa
     LineaMap lista_horarios_teoricos_parada;
@@ -230,21 +179,55 @@ int main(int argc, char *argv[])
     MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     MPI_Recv(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-    cout << "Esclavo (" << rank << ") --> me toca procesar en los viajes: start: " << start << ", count: " << count << endl;
     vector<DataViaje> viajes;
     procesar_viajes(DATOS_VIAJES, viajes, start, count, lista_horarios_teoricos_parada);
 
-    cout << "Esclavo (" << rank << ") --> cantidad viajes: " << viajes.size() << endl;
-    // Serializar los datos de los viajes
-    string viajes_serializados = serialize_viajes(viajes);
-    size_t viajes_size = viajes_serializados.size();
+    // Pasar viajes a linea map
+    // Actualizar `cantidad_boletos_vendidos` y `delay` en `lista_horarios_teoricos_parada`
+    for (const auto &viaje : viajes)
+    {
+      int dia_semana = obtener_dia_semana(viaje.fecha_evento);
 
-    cout << "Esclavo (" << rank << ") --> enviando viajes_size: " << viajes_size << endl;
-    MPI_Send(&viajes_size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-    cout << "Esclavo (" << rank << ") --> enviando viajes serializados: " << viajes.size() << endl;
-    MPI_Send(viajes_serializados.data(), viajes_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
+      auto linea_it = lista_horarios_teoricos_parada.find(viaje.dsc_linea);
+      if (linea_it != lista_horarios_teoricos_parada.end())
+      {
+        auto variante_it = linea_it->second.find(viaje.sevar_codigo);
+        if (variante_it != linea_it->second.end())
+        {
+          auto dia_it = variante_it->second.find(dia_semana);
+          if (dia_it != variante_it->second.end())
+          {
+            auto parada_it = dia_it->second.find(viaje.codigo_parada_origen);
+            if (parada_it != dia_it->second.end())
+            {
+              auto recorrido_it = parada_it->second.find(viaje.recorrido);
+              if (recorrido_it != parada_it->second.end())
+              {
+                auto &pos_recorrido_map = recorrido_it->second;
+                auto pos_recorrido_it = pos_recorrido_map.find(viaje.pos_recorrido);
+                if (pos_recorrido_it != pos_recorrido_map.end())
+                {
+                  HorarioTeorico &horario_teorico = pos_recorrido_it->second;
+                  horario_teorico.cantidad_boletos_vendidos++;
+                  if (horario_teorico.delay == -1 || viaje.delay < horario_teorico.delay)
+                  {
+                    horario_teorico.delay = viaje.delay;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
 
-    // cout << "---> Termine proceso con rank: " << rank << ", con cantidad de viajes: " << viajes.size() << endl;
+    // Serializar los horarios teoricos
+    string horarios_teoricos_con_viajes_serializados;
+    serialize_horarios_teoricos(lista_horarios_teoricos_parada, horarios_teoricos_con_viajes_serializados);
+
+    int size = horarios_teoricos_con_viajes_serializados.size();
+    MPI_Send(&size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    MPI_Send(horarios_teoricos_con_viajes_serializados.data(), size, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
   }
 
   MPI_Finalize();
