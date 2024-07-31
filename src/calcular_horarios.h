@@ -12,6 +12,7 @@ using namespace std;
 LineaMap procesar_horarios_teoricos();
 int obtener_dia_semana(const string &horario_real);
 void encontrar_recorrido_y_calcular_delay(DataViaje &v, const LineaMap &horarios_linea);
+string convertir_fecha_a_ymd(const string &fecha_hora);
 void procesar_viajes(const string &filename, vector<DataViaje> &data, int start, int count, const LineaMap &horarios_linea);
 
 #endif // CALCULAR_HORARIOS_H

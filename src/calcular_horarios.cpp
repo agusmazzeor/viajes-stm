@@ -74,11 +74,11 @@ LineaMap procesar_horarios_teoricos()
 
 			if (find(variantes.begin(), variantes.end(), variante) != variantes.end())
 			{
-				int id_tipo_dia = stoi(horario_teorico[0]);						 // tipo_dia
-				string id_recorrido = horario_teorico[2];							 // frecuencia
-				string id_parada = horario_teorico[3];								 // cod_ubic_parada
-				int pos_recorrido = stoi(horario_teorico[4]);					 // ordinal
-				string horario = horario_teorico[5];									 // hora
+				int id_tipo_dia = stoi(horario_teorico[0]);			   // tipo_dia
+				string id_recorrido = horario_teorico[2];			   // frecuencia
+				string id_parada = horario_teorico[3];				   // cod_ubic_parada
+				int pos_recorrido = stoi(horario_teorico[4]);		   // ordinal
+				string horario = horario_teorico[5];				   // hora
 				bool arranco_dia_anterior = horario_teorico[6] == "1"; // dia_anterior
 
 				HorarioTeorico ht;
@@ -139,6 +139,22 @@ string convertir_fecha_a_hmm(const string &fecha_hora)
 	int minutos = fecha_completa.tm_min;
 	ostringstream oss;
 	oss << horas << setfill('0') << setw(2) << minutos;
+	return oss.str();
+};
+
+string convertir_fecha_a_ymd(const string &fecha_hora)
+{
+	const string formato_fecha = "%Y-%m-%d %H:%M:%S";
+	tm fecha_completa = {};
+	istringstream ss(fecha_hora);
+	ss >> get_time(&fecha_completa, formato_fecha.c_str());
+
+	int ano = fecha_completa.tm_year + 1900;
+	int mes = fecha_completa.tm_mon;
+	int dia = fecha_completa.tm_mday;
+
+	ostringstream oss;
+	oss << ano << setfill('0') << setw(2) << mes << setfill('0') << setw(2) << dia;
 	return oss.str();
 };
 

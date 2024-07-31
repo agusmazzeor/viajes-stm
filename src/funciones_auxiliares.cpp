@@ -44,17 +44,17 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 						{
 							const HorarioTeorico &horario = pos_recorrido.second;
 							file << linea.first << ","
-								 << variante.first << ","
-								 << dia.first << ","
-								 << parada.first << ","
-								 << recorrido.first << ","
-								 << pos_recorrido.first << ","
-								 << horario.delay << ","
-								 << horario.cantidad_boletos_vendidos << ","
-								 << horario.horario << ","
-								 << horario.arranco_dia_anterior << ","
-								 << horario.retraso_acumulado << ","
-								 << horario.cant_pasajeros_parada_anterior << endl;
+									 << variante.first << ","
+									 << dia.first << ","
+									 << parada.first << ","
+									 << recorrido.first << ","
+									 << pos_recorrido.first << ","
+									 << horario.delay << ","
+									 << horario.cantidad_boletos_vendidos << ","
+									 << horario.horario << ","
+									 << horario.arranco_dia_anterior << ","
+									 << horario.retraso_acumulado << ","
+									 << horario.cant_pasajeros_parada_anterior << endl;
 						}
 					}
 				}
@@ -75,7 +75,7 @@ void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const st
 	}
 
 	// Escribir los encabezados
-	file << "linea,variante,tipo_dia,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior" << endl;
+	file << "linea,variante,tipo_dia,fecha,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior" << endl;
 
 	for (const auto &linea : linea_map)
 	{
@@ -83,25 +83,29 @@ void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const st
 		{
 			for (const auto &dia : variante.second)
 			{
-				for (const auto &recorrido : dia.second)
+				for (const auto &fecha : dia.second)
 				{
-					for (const auto &pos_recorrido : recorrido.second)
+					for (const auto &recorrido : fecha.second)
 					{
-						for (const auto &parada : pos_recorrido.second)
+						for (const auto &pos_recorrido : recorrido.second)
 						{
-							const HorarioTeorico &horario = parada.second;
-							file << linea.first << ","
-								 << variante.first << ","
-								 << dia.first << ","
-								 << parada.first << ","
-								 << recorrido.first << ","
-								 << pos_recorrido.first << ","
-								 << horario.delay << ","
-								 << horario.cantidad_boletos_vendidos << ","
-								 << horario.horario << ","
-								 << horario.arranco_dia_anterior << ","
-								 << horario.retraso_acumulado << ","
-								 << horario.cant_pasajeros_parada_anterior << endl;
+							for (const auto &parada : pos_recorrido.second)
+							{
+								const HorarioTeorico &horario = parada.second;
+								file << linea.first << ","
+										 << variante.first << ","
+										 << dia.first << ","
+										 << fecha.first << ","
+										 << parada.first << ","
+										 << recorrido.first << ","
+										 << pos_recorrido.first << ","
+										 << horario.delay << ","
+										 << horario.cantidad_boletos_vendidos << ","
+										 << horario.horario << ","
+										 << horario.arranco_dia_anterior << ","
+										 << horario.retraso_acumulado << ","
+										 << horario.cant_pasajeros_parada_anterior << endl;
+							}
 						}
 					}
 				}
@@ -179,7 +183,7 @@ void print_data_viaje(const vector<DataViaje> &data_viajes)
 	}
 }
 
-void combinar_linea_maps(LineaMap &dest, const LineaMap &src)
+void combinar_linea_maps(LineaMapFinal &dest, const LineaMapFinal &src)
 {
 	for (const auto &linea : src)
 	{
@@ -187,20 +191,23 @@ void combinar_linea_maps(LineaMap &dest, const LineaMap &src)
 		{
 			for (const auto &id_tipo_dia : variante.second)
 			{
-				for (const auto &id_parada : id_tipo_dia.second)
+				for (const auto &fecha : id_tipo_dia.second)
 				{
-					for (const auto &id_recorrido : id_parada.second)
+					for (const auto &id_recorrido : fecha.second)
 					{
 						for (const auto &pos_recorrido : id_recorrido.second)
 						{
-							const HorarioTeorico &ht_src = pos_recorrido.second;
-							auto &ht_dest = dest[linea.first][variante.first][id_tipo_dia.first][id_parada.first][id_recorrido.first][pos_recorrido.first];
-
-							if (ht_dest.delay == -1 || (ht_src.delay != -1 && ht_src.delay < ht_dest.delay))
+							for (const auto &id_parada : pos_recorrido.second)
 							{
-								ht_dest.delay = ht_src.delay;
+								const HorarioTeorico &ht_src = id_parada.second;
+								auto &ht_dest = dest[linea.first][variante.first][id_tipo_dia.first][fecha.first][id_recorrido.first][pos_recorrido.first][id_parada.first];
+
+								if (ht_dest.delay == -1 || (ht_src.delay != -1 && ht_src.delay < ht_dest.delay))
+								{
+									ht_dest.delay = ht_src.delay;
+								}
+								ht_dest.cantidad_boletos_vendidos += ht_src.cantidad_boletos_vendidos;
 							}
-							ht_dest.cantidad_boletos_vendidos += ht_src.cantidad_boletos_vendidos;
 						}
 					}
 				}
@@ -221,4 +228,38 @@ string obtener_derectorio_actual()
 		cerr << "Error al obtener el directorio actual" << endl;
 		return "";
 	}
+}
+
+bool existe_entrada(LineaMapFinal &linea_map_final, const string &linea, const string &variante, const string &tipo_dia, const string &fecha, const string &recorrido, const int &pos_recorrido, const string &parada)
+{
+	auto it1 = linea_map_final.find(linea);
+	if (it1 != linea_map_final.end())
+	{
+		auto it2 = it1->second.find(variante);
+		if (it2 != it1->second.end())
+		{
+			auto it3 = it2->second.find(tipo_dia);
+			if (it3 != it2->second.end())
+			{
+				auto it4 = it3->second.find(fecha);
+				if (it4 != it3->second.end())
+				{
+					auto it5 = it4->second.find(recorrido);
+					if (it5 != it4->second.end())
+					{
+						auto it6 = it5->second.find(pos_recorrido);
+						if (it6 != it5->second.end())
+						{
+							auto it7 = it6->second.find(parada);
+							if (it7 != it6->second.end())
+							{
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return false;
 }

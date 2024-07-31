@@ -18,7 +18,7 @@ struct HorarioTeorico
 {
   int delay;
   int cantidad_boletos_vendidos;
-  string horario;
+  string horario; // horario teorico
   bool arranco_dia_anterior;
   int retraso_acumulado;
   int cant_pasajeros_parada_anterior;
@@ -32,12 +32,15 @@ using TipoDiaMap = map<int, ParadaMap>;            // clave: id_tipo_dia
 using VarianteMap = map<string, TipoDiaMap>;       // clave: variante de la linea
 using LineaMap = map<string, VarianteMap>;         // clave: linea
 // algo[linea][variante][tipo_dia][parada][recorrido][pos_recorrido]
+// algo[linea][variante][tipo_dia][fecha][parada][recorrido][pos_recorrido]
 
-// algo[linea][variante][tipo_dia][recorrido][pos_recorrido][parada]
+// algo[linea][variante][tipo_dia][recorrido][pos_recorrido][parada] VIEJO
+// algo[linea][variante][tipo_dia][fecha][recorrido][pos_recorrido][parada] NUEVO
 using ParadaMapFinal = map<string, HorarioTeorico>;          // clave: id_parada
 using PosRecorridoMapFinal = map<int, ParadaMapFinal>;       // clave: ordinal
 using RecorridoMapFinal = map<string, PosRecorridoMapFinal>; // clave: id_recorrido
-using TipoDiaMapFinal = map<int, RecorridoMapFinal>;         // clave: id_tipo_dia
+using FechaMapFinal = map<string, RecorridoMapFinal>;        // clave: fecha
+using TipoDiaMapFinal = map<string, FechaMapFinal>;          // clave: id_tipo_dia
 using VarianteMapFinal = map<string, TipoDiaMapFinal>;       // clave: variante de la linea
 using LineaMapFinal = map<string, VarianteMapFinal>;         // clave: linea
 
