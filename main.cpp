@@ -97,12 +97,14 @@ int main(int argc, char *argv[])
       MPI_Recv(&viajes_size, 1, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       vector<char> buffer(viajes_size);
       MPI_Recv(buffer.data(), viajes_size, MPI_CHAR, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
+      cout << "Master      ---> Recibi horarios de un esclavo" << endl;
       // Deserializar el mapa
       LineaMapFinal linea_map_esclavo;
       string horarios_teoricos_serializados(buffer.begin(), buffer.end());
       deserialize_horarios_teoricos_final(horarios_teoricos_serializados, linea_map_esclavo);
+      cout << "Master      ---> Combino horarios de un esclavo con los resultados finales" << endl;
       combinar_linea_maps(resultado_linea_map_final, linea_map_esclavo);
+      cout << "Master      ---> Termine de combinar con los resultados finales" << endl;
     }
     cout << "Master      ---> Termine de recibir nuevos horarios de los esclavos" << endl;
     auto end_time_procesamiento = high_resolution_clock::now();
