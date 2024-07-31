@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=mitrabajo
 #SBATCH --ntasks=1
-#SBATCH --mem-per-cpu=1024
+#SBATCH --mem-per-cpu=16384
 #SBATCH --time=10:00:00
 #SBATCH --partition=normal
 #SBATCH --qos=normal

@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
   if (rank == 0)
   {
     // Master process
-
+    cout << "Master      ---> Arranco" << endl;
     // Iniciar el temporizador
     auto start_time = high_resolution_clock::now();
 
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     auto duration_pre = duration_cast<minutes>(end_time_pre - start_time);
     cout << "Tiempo de preprocesamiento: " << duration_pre.count() << " minutos" << endl;
     guardar_tiempo_de_ejecucion_en_archivo(duration_pre.count(), size, "resultado/tiempo_de_ejecucion.txt", "preprocesamiento");
-
+    cout << "Master      ---> Envio horarios teoricos a los esclavos" << endl;
     auto start_time_procesamiento = high_resolution_clock::now();
     // Enviar el tamaño del mapa serializado
     int schedule_size = horarios_teoricos_serializados.size();
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     {
       MPI_Send(horarios_teoricos_serializados.data(), schedule_size, MPI_CHAR, i, 0, MPI_COMM_WORLD);
     }
-
+    cout << "Master      ---> Termino de enviar horarios teoricos a los esclavos" << endl;
     // Calcular chunks para procesar los viajes en los procesos esclavos
     ifstream file(DATOS_VIAJES);
     string line;
@@ -86,9 +86,10 @@ int main(int argc, char *argv[])
       MPI_Send(&start, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
       MPI_Send(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
     }
-
+    cout << "Master      ---> Termino de enviar cuantos viajes le toca procesar a cada esclavos" << endl;
     LineaMapFinal resultado_linea_map_final;
 
+    cout << "Master      ---> Espero recibir nuevos horarios de los esclavos" << endl;
     // Obtener los resultados de los esclavos
     for (int i = 1; i < size; ++i)
     {
@@ -103,6 +104,7 @@ int main(int argc, char *argv[])
       deserialize_horarios_teoricos_final(horarios_teoricos_serializados, linea_map_esclavo);
       combinar_linea_maps(resultado_linea_map_final, linea_map_esclavo);
     }
+    cout << "Master      ---> Termine de recibir nuevos horarios de los esclavos" << endl;
     auto end_time_procesamiento = high_resolution_clock::now();
     auto duration_procesamiento = duration_cast<minutes>(end_time_procesamiento - start_time_procesamiento);
     cout << "Tiempo de procesamiento: " << duration_procesamiento.count() << " minutos" << endl;
@@ -112,6 +114,7 @@ int main(int argc, char *argv[])
     // LineaMapFinal linea_map_final;
     // convertir_linea_map_a_map_linea(resultado_linea_map_final, linea_map_final);
 
+    cout << "Master      ---> Recorro horarios teoricos segun pos_recorrido" << endl;
     // variante, parada, recorrido, pos_recorrido, delay, retraso_parada_anterior
     for (auto &linea : resultado_linea_map_final)
     {
@@ -155,6 +158,7 @@ int main(int argc, char *argv[])
     // cout << "----------------------------" << endl;
     // print_data_linea(lista_horarios_teoricos_parada);
 
+    cout << "Master      ---> Guardo horarios teoricos finales" << endl;
     // Guardar `lista_horarios_teoricos_parada` en un archivo
     guardar_linea_map_final_en_archivo(resultado_linea_map_final, "resultado/retrasos_de_lineas.csv");
 
@@ -173,28 +177,36 @@ int main(int argc, char *argv[])
   else
   {
     // Proceso esclavo
+    cout << "Esclavo (" << rank << ") ---> Arranco" << endl;
+
+    cout << "Esclavo (" << rank << ") ---> Espero recibir horarios teoricos" << endl;
     // Recibir el tamaño del mapa serializado
     int schedule_size;
     MPI_Recv(&schedule_size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     // Recibir el mapa serializado
     vector<char> buffer(schedule_size);
     MPI_Recv(buffer.data(), schedule_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    cout << "Esclavo (" << rank << ") ---> Termine de recibir horarios teoricos" << endl;
 
     // Deserializar el mapa
     LineaMap lista_horarios_teoricos_parada;
     string horarios_teoricos_serializados(buffer.begin(), buffer.end());
     deserialize_horarios_teoricos(horarios_teoricos_serializados, lista_horarios_teoricos_parada);
 
+    cout << "Esclavo (" << rank << ") ---> Espero recibir rango de viajes a evaluar" << endl;
     int start, count;
     MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     MPI_Recv(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    cout << "Esclavo (" << rank << ") ---> Recibo start: " << start << ", count: " << count << endl;
 
+    cout << "Esclavo (" << rank << ") ---> Proceso viajes" << endl;
     vector<DataViaje> viajes;
     procesar_viajes(DATOS_VIAJES, viajes, start, count, lista_horarios_teoricos_parada);
-
+    cout << "Esclavo (" << rank << ") ---> Termino de procesar viajes" << endl;
     // Pasar viajes a linea map
     // Actualizar `cantidad_boletos_vendidos` y `delay` en `lista_horarios_teoricos_parada`
 
+    cout << "Esclavo (" << rank << ") ---> Creo horarios_final en base a viajes" << endl;
     LineaMapFinal horarios_final;
     for (const auto &viaje : viajes)
     {
@@ -254,13 +266,16 @@ int main(int argc, char *argv[])
       }
     }
 
+    cout << "Esclavo (" << rank << ") ---> horarios_final size: " << horarios_final.size() << endl;
     // Serializar los horarios teoricos
     string horarios_teoricos_con_viajes_serializados;
     serialize_horarios_teoricos_final(horarios_final, horarios_teoricos_con_viajes_serializados);
 
     int size = horarios_teoricos_con_viajes_serializados.size();
+    cout << "Esclavo (" << rank << ") ---> horarios_final serializados size: " << size << endl;
     MPI_Send(&size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
     MPI_Send(horarios_teoricos_con_viajes_serializados.data(), size, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
+    cout << "Esclavo (" << rank << ") ---> Termino de enviar horarios teoricos nuevos" << endl;
   }
 
   MPI_Finalize();
