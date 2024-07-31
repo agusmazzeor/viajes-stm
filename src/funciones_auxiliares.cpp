@@ -165,6 +165,45 @@ void print_data_linea(LineaMap &lista_horarios_teoricos_parada)
 	}
 }
 
+void print_data_linea_final(LineaMapFinal &lista_horarios_teoricos_parada)
+{
+	for (const auto &linea : lista_horarios_teoricos_parada)
+	{
+		for (const auto &variante : linea.second)
+		{
+			for (const auto &tipo_dia : variante.second)
+			{
+				for (const auto &fecha : tipo_dia.second)
+				{
+					for (const auto &recorrido : fecha.second)
+					{
+						for (const auto &pos_recorrido : recorrido.second)
+						{
+							for (const auto &parada : pos_recorrido.second)
+							{
+								const HorarioTeorico &ht = parada.second;
+								cout << "Linea: " << linea.first << endl;
+								cout << "  Variante: " << variante.first << endl;
+								cout << "    Tipo de día: " << tipo_dia.first << endl;
+								cout << "      Fecha: " << fecha.first << endl;
+								cout << "        Parada: " << parada.first << endl;
+								cout << "          Recorrido: " << recorrido.first << endl;
+								cout << "            Pos recorrido: " << pos_recorrido.first << endl;
+								cout << "              Delay: " << ht.delay << endl;
+								cout << "              Boletos vendidos: " << ht.cantidad_boletos_vendidos << endl;
+								cout << "              Horario: " << ht.horario << endl;
+								cout << "              Arrancó día anterior: " << (ht.arranco_dia_anterior ? "Sí" : "No") << endl;
+								cout << "              Retraso parada anterior: " << ht.retraso_acumulado << endl;
+								cout << "              Cant. boletos parada anterior: " << ht.cant_pasajeros_parada_anterior << endl;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 void print_data_viaje(const vector<DataViaje> &data_viajes)
 {
 	for (const auto &viaje : data_viajes)
@@ -202,7 +241,7 @@ void combinar_linea_maps(LineaMapFinal &dest, const LineaMapFinal &src)
 								const HorarioTeorico &ht_src = id_parada.second;
 								auto &ht_dest = dest[linea.first][variante.first][id_tipo_dia.first][fecha.first][id_recorrido.first][pos_recorrido.first][id_parada.first];
 
-								if (ht_dest.delay == -1 || (ht_src.delay != -1 && ht_src.delay < ht_dest.delay))
+								if (ht_dest.delay == 0 || (ht_src.delay < ht_dest.delay))
 								{
 									ht_dest.delay = ht_src.delay;
 								}

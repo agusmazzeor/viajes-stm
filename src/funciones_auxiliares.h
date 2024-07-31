@@ -13,6 +13,7 @@ vector<string> split(const string &s, char delimiter);
 void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filename);
 void guardar_tiempo_de_ejecucion_en_archivo(const int &duration, const int &num_processes, const string &filename, const string &tipo_tiempo);
 void print_data_linea(LineaMap &lista_horarios_teoricos_parada);
+void print_data_linea_final(LineaMapFinal &lista_horarios_teoricos_parada);
 void print_data_viaje(const vector<DataViaje> &data_viajes);
 void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const string &filename);
 void combinar_linea_maps(LineaMapFinal &dest, const LineaMapFinal &src);
