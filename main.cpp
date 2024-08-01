@@ -269,6 +269,7 @@ int main(int argc, char *argv[])
         }
       }
     }
+    calcular_distancia_parada_anterior(horarios_final);
 
     cout << "Esclavo (" << rank << ") ---> horarios_final size: " << horarios_final.size() << endl;
     // Serializar los horarios teoricos

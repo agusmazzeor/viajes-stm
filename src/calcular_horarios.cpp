@@ -480,3 +480,48 @@ void procesar_viajes(const string &filename, vector<DataViaje> &data, int start,
 		};
 	};
 };
+
+// Función para calcular la distancia entre dos puntos UTM
+double calcular_distancia_utm(double x1, double y1, double x2, double y2)
+{
+	return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+}
+
+void calcular_distancia_parada_anterior(LineaMapFinal &linea_map)
+{
+	for (auto &linea : linea_map)
+	{
+		for (auto &variante : linea.second)
+		{
+			for (auto &tipo_dia : variante.second)
+			{
+				for (auto &fecha : tipo_dia.second)
+				{
+					for (auto &recorrido : fecha.second)
+					{
+						HorarioTeorico *parada_anterior = nullptr;
+
+						for (auto &pos_recorrido : recorrido.second)
+						{
+							for (auto &parada : pos_recorrido.second)
+							{
+								HorarioTeorico &ht = parada.second;
+								if (parada_anterior)
+								{
+									ht.distancia_parada_anterior = calcular_distancia_utm(
+											parada_anterior->coord_este, parada_anterior->coord_norte,
+											ht.coord_este, ht.coord_norte);
+								}
+								else
+								{
+									ht.distancia_parada_anterior = 0; // Primera parada no tiene parada anterior
+								}
+								parada_anterior = &ht;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
