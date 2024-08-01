@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=mitrabajo
-#SBATCH --ntasks=3
-#SBATCH --mem-per-cpu=16384
+#SBATCH --ntasks=10
+#SBATCH --mem-per-cpu=32768
 #SBATCH --time=10:00:00
 #SBATCH --partition=normal
 #SBATCH --qos=normal
@@ -18,5 +18,5 @@ do
 	# echo "1 proceso con 16gb de RAM"
 	make clean
 	make
-	mpirun -np 3 ./bin/main
+	mpirun -np 10 ./bin/main
 done
