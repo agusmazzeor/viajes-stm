@@ -253,6 +253,11 @@ void combinar_linea_maps(LineaMapFinal &dest, const LineaMapFinal &src)
 								const HorarioTeorico &ht_src = id_parada.second;
 								auto &ht_dest = dest[linea.first][variante.first][id_tipo_dia.first][fecha.first][id_recorrido.first][pos_recorrido.first][id_parada.first];
 
+								ht_dest.horario = ht_src.horario;
+								ht_dest.arranco_dia_anterior = ht_src.arranco_dia_anterior;
+								ht_dest.retraso_acumulado = ht_src.retraso_acumulado;
+								ht_dest.cant_pasajeros_parada_anterior = ht_src.cant_pasajeros_parada_anterior;
+
 								if (ht_dest.delay == 0 || (ht_src.delay < ht_dest.delay))
 								{
 									ht_dest.delay = ht_src.delay;
