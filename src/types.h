@@ -22,6 +22,9 @@ struct HorarioTeorico
   bool arranco_dia_anterior;
   int retraso_acumulado;
   int cant_pasajeros_parada_anterior;
+  double coord_este;
+  double coord_norte;
+  double distancia_parada_anterior;
 };
 
 // Definición de los tipos de datos anidados
@@ -32,7 +35,6 @@ using TipoDiaMap = map<int, ParadaMap>;            // clave: id_tipo_dia
 using VarianteMap = map<string, TipoDiaMap>;       // clave: variante de la linea
 using LineaMap = map<string, VarianteMap>;         // clave: linea
 // algo[linea][variante][tipo_dia][parada][recorrido][pos_recorrido]
-// algo[linea][variante][tipo_dia][fecha][parada][recorrido][pos_recorrido]
 
 // algo[linea][variante][tipo_dia][recorrido][pos_recorrido][parada] VIEJO
 // algo[linea][variante][tipo_dia][fecha][recorrido][pos_recorrido][parada] NUEVO

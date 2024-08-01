@@ -233,7 +233,6 @@ int main(int argc, char *argv[])
                 auto pos_recorrido_it = pos_recorrido_map.find(viaje.pos_recorrido);
                 if (pos_recorrido_it != pos_recorrido_map.end())
                 {
-
                   HorarioTeorico &horario_teorico = pos_recorrido_it->second;
 
                   string parsed_fecha = convertir_fecha_a_ymd(viaje.fecha_evento);
@@ -258,6 +257,9 @@ int main(int argc, char *argv[])
                     horario_teorico_final.arranco_dia_anterior = horario_teorico.arranco_dia_anterior;
                     horario_teorico_final.retraso_acumulado = horario_teorico.retraso_acumulado;
                     horario_teorico_final.cant_pasajeros_parada_anterior = horario_teorico.cant_pasajeros_parada_anterior;
+                    horario_teorico_final.coord_este = horario_teorico.coord_este;
+                    horario_teorico_final.coord_norte = horario_teorico.coord_norte;
+                    horario_teorico_final.distancia_parada_anterior = horario_teorico.distancia_parada_anterior;
                     horarios_final[viaje.dsc_linea][viaje.sevar_codigo][to_string(dia_semana)][parsed_fecha][viaje.recorrido][viaje.pos_recorrido][viaje.codigo_parada_origen] = horario_teorico_final;
                   }
                 }

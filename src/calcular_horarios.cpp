@@ -6,6 +6,10 @@
 #include <limits>
 #include <unordered_map>
 #include <algorithm> // Necesario para std::find
+#include <cmath>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include "types.h"
 #include "funciones_auxiliares.h"
 
@@ -40,6 +44,53 @@ unordered_map<string, vector<string>> obtener_lineas_y_variantes()
 	return lineas_con_variantes;
 };
 
+unordered_map<string, pair<double, double>> obtener_paradas_y_coordenadas()
+{
+	string ruta_archivo_paradas = PARADAS;
+	unordered_map<string, pair<double, double>> paradas_con_coordenadas;
+	string line;
+
+	ifstream archivo_paradas(ruta_archivo_paradas);
+	if (!archivo_paradas.is_open())
+	{
+		cerr << "No se pudo abrir el archivo: " << ruta_archivo_paradas << endl;
+		return paradas_con_coordenadas;
+	};
+
+	// Ignorar la primera línea del encabezado
+	if (getline(archivo_paradas, line))
+	{
+		while (getline(archivo_paradas, line))
+		{
+			vector<string> tokens = split(line, ',');
+			if (tokens.size() < 10)
+			{
+				cerr << "Línea mal formada: " << line << endl;
+				continue; // Saltar líneas mal formateadas
+			}
+
+			string cod_parada = tokens[0];
+			double coord_este, coord_norte;
+
+			try
+			{
+				coord_este = stod(tokens[8]);
+				coord_norte = stod(tokens[9]);
+			}
+			catch (const std::exception &e)
+			{
+				cerr << "Error convirtiendo coordenadas: " << e.what() << " en la línea: " << line << endl;
+				continue; // Saltar esta línea si hay un error de conversión
+			}
+
+			paradas_con_coordenadas[cod_parada] = make_pair(coord_este, coord_norte);
+		};
+	};
+
+	archivo_paradas.close();
+	return paradas_con_coordenadas;
+};
+
 LineaMap procesar_horarios_teoricos()
 {
 	string ruta_archivo_horarios_teoricos = HORARIOS_POR_PARADA;
@@ -47,6 +98,8 @@ LineaMap procesar_horarios_teoricos()
 
 	// Obtener todas las líneas únicas con sus variantes
 	unordered_map<string, vector<string>> lineas_con_variantes = obtener_lineas_y_variantes();
+	// Obtener las coordenadas de las paradas
+	unordered_map<string, pair<double, double>> paradas_con_coordenadas = obtener_paradas_y_coordenadas();
 
 	ifstream archivo_horarios_teoricos(ruta_archivo_horarios_teoricos);
 	if (!archivo_horarios_teoricos.is_open())
@@ -88,6 +141,21 @@ LineaMap procesar_horarios_teoricos()
 				ht.arranco_dia_anterior = arranco_dia_anterior;
 				ht.retraso_acumulado = -1;
 				ht.cant_pasajeros_parada_anterior = 0;
+				ht.distancia_parada_anterior = 0.0;
+
+				// Buscar y asignar coordenadas de la parada
+				auto coord_it = paradas_con_coordenadas.find(id_parada);
+				if (coord_it != paradas_con_coordenadas.end())
+				{
+					ht.coord_este = coord_it->second.first;
+					ht.coord_norte = coord_it->second.second;
+				}
+				else
+				{
+					cerr << "No se encontraron coordenadas para la parada: " << id_parada << endl;
+					ht.coord_este = 0;
+					ht.coord_norte = 0;
+				}
 
 				lista_horarios_teoricos_parada[linea_omnibus][variante][id_tipo_dia][id_parada][id_recorrido][pos_recorrido] = ht;
 				break; // Una vez encontrada la línea, no es necesario seguir buscando

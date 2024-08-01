@@ -28,7 +28,7 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 	}
 
 	// Escribir los encabezados
-	file << "linea,variante,tipo_dia,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior" << endl;
+	file << "linea,variante,tipo_dia,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior,coord_este,coord_norte,distancia_parada_anterior" << endl;
 
 	for (const auto &linea : linea_map)
 	{
@@ -54,7 +54,10 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 									 << horario.horario << ","
 									 << horario.arranco_dia_anterior << ","
 									 << horario.retraso_acumulado << ","
-									 << horario.cant_pasajeros_parada_anterior << endl;
+									 << horario.cant_pasajeros_parada_anterior << ","
+									 << horario.coord_este << ","
+									 << horario.coord_norte << ","
+									 << horario.distancia_parada_anterior << endl;
 						}
 					}
 				}
@@ -75,7 +78,7 @@ void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const st
 	}
 
 	// Escribir los encabezados
-	file << "linea,variante,tipo_dia,fecha,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior" << endl;
+	file << "linea,variante,tipo_dia,fecha,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior,coord_este,coord_norte,distancia_parada_anterior" << endl;
 
 	for (const auto &linea : linea_map)
 	{
@@ -104,7 +107,10 @@ void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const st
 										 << horario.horario << ","
 										 << horario.arranco_dia_anterior << ","
 										 << horario.retraso_acumulado << ","
-										 << horario.cant_pasajeros_parada_anterior << endl;
+										 << horario.cant_pasajeros_parada_anterior << ","
+										 << horario.coord_este << ","
+										 << horario.coord_norte << ","
+										 << horario.distancia_parada_anterior << endl;
 							}
 						}
 					}
@@ -157,6 +163,9 @@ void print_data_linea(LineaMap &lista_horarios_teoricos_parada)
 							cout << "            Arrancó día anterior: " << (ht.arranco_dia_anterior ? "Sí" : "No") << endl;
 							cout << "            Retraso parada anterior: " << ht.retraso_acumulado << endl;
 							cout << "            Cant. boletos parada anterior: " << ht.cant_pasajeros_parada_anterior << endl;
+							cout << "            Coordenada Este: " << ht.coord_este << endl;
+							cout << "            Coordenada Norte: " << ht.coord_norte << endl;
+							cout << "            Distancia a la parada anterior: " << ht.distancia_parada_anterior << endl;
 						}
 					}
 				}
@@ -195,6 +204,9 @@ void print_data_linea_final(LineaMapFinal &lista_horarios_teoricos_parada)
 								cout << "              Arrancó día anterior: " << (ht.arranco_dia_anterior ? "Sí" : "No") << endl;
 								cout << "              Retraso parada anterior: " << ht.retraso_acumulado << endl;
 								cout << "              Cant. boletos parada anterior: " << ht.cant_pasajeros_parada_anterior << endl;
+								cout << "              Coordenada Este: " << ht.coord_este << endl;
+								cout << "              Coordenada Norte: " << ht.coord_norte << endl;
+								cout << "              Distancia a la parada anterior: " << ht.distancia_parada_anterior << endl;
 							}
 						}
 					}
@@ -246,6 +258,9 @@ void combinar_linea_maps(LineaMapFinal &dest, const LineaMapFinal &src)
 									ht_dest.delay = ht_src.delay;
 								}
 								ht_dest.cantidad_boletos_vendidos += ht_src.cantidad_boletos_vendidos;
+								ht_dest.coord_este = ht_src.coord_este;
+								ht_dest.coord_norte = ht_src.coord_norte;
+								ht_dest.distancia_parada_anterior = ht_src.distancia_parada_anterior;
 							}
 						}
 					}
