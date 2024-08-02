@@ -6,19 +6,16 @@
 
 using namespace std;
 
-// const string DATOS_VIAJES = "datos_dummy/05_2024_viajes.csv";
-// const string HORARIOS_POR_PARADA = "datos_dummy/horarios_por_parada.csv";
-// const string PARADAS = "datos_dummy/paradas.csv";
 const string DATOS_VIAJES = "datos/viajes_stm.csv";
 const string HORARIOS_POR_PARADA = "datos/horarios_por_parada.csv";
 const string PARADAS = "datos/paradas.csv";
 
-// Definición de la estructura para la información de los horarios teóricos de una parada
+// Definición de las estructuras para la información de los horarios teóricos de una parada
 struct HorarioTeorico
 {
   int delay;
   int cantidad_boletos_vendidos;
-  string horario; // horario teorico
+  string horario;
   bool arranco_dia_anterior;
   int retraso_acumulado;
   int cant_pasajeros_parada_anterior;
@@ -27,17 +24,13 @@ struct HorarioTeorico
   double distancia_parada_anterior;
 };
 
-// Definición de los tipos de datos anidados
 using PosRecorridoMap = map<int, HorarioTeorico>;  // clave: ordinal
 using RecorridoMap = map<string, PosRecorridoMap>; // clave: id_recorrido
 using ParadaMap = map<string, RecorridoMap>;       // clave: id_parada
 using TipoDiaMap = map<int, ParadaMap>;            // clave: id_tipo_dia
 using VarianteMap = map<string, TipoDiaMap>;       // clave: variante de la linea
 using LineaMap = map<string, VarianteMap>;         // clave: linea
-// algo[linea][variante][tipo_dia][parada][recorrido][pos_recorrido]
 
-// algo[linea][variante][tipo_dia][recorrido][pos_recorrido][parada] VIEJO
-// algo[linea][variante][tipo_dia][fecha][recorrido][pos_recorrido][parada] NUEVO
 using ParadaMapFinal = map<string, HorarioTeorico>;          // clave: id_parada
 using PosRecorridoMapFinal = map<int, ParadaMapFinal>;       // clave: ordinal
 using RecorridoMapFinal = map<string, PosRecorridoMapFinal>; // clave: id_recorrido

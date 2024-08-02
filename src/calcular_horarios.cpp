@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <limits>
 #include <unordered_map>
-#include <algorithm> // Necesario para std::find
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <fstream>
@@ -28,7 +28,7 @@ unordered_map<string, vector<string>> obtener_lineas_y_variantes()
 		return lineas_con_variantes;
 	};
 
-	// Ignorar la primera línea del encabezado
+	// Ignorar la primera línea (headers)
 	if (getline(archivo_paradas, line))
 	{
 		while (getline(archivo_paradas, line))
@@ -57,7 +57,7 @@ unordered_map<string, pair<double, double>> obtener_paradas_y_coordenadas()
 		return paradas_con_coordenadas;
 	};
 
-	// Ignorar la primera línea del encabezado
+	// Ignorar la primera línea (headers)
 	if (getline(archivo_paradas, line))
 	{
 		while (getline(archivo_paradas, line))
@@ -80,7 +80,7 @@ unordered_map<string, pair<double, double>> obtener_paradas_y_coordenadas()
 			catch (const std::exception &e)
 			{
 				cerr << "Error convirtiendo coordenadas: " << e.what() << " en la línea: " << line << endl;
-				continue; // Saltar esta línea si hay un error de conversión
+				continue;
 			}
 
 			paradas_con_coordenadas[cod_parada] = make_pair(coord_este, coord_norte);
@@ -169,10 +169,8 @@ LineaMap procesar_horarios_teoricos()
 
 int obtener_dia_semana(const string &horario_real)
 {
-	// Definir el formato de la fecha
 	const string formato_fecha = "%Y-%m-%dT%H:%M:%S";
 
-	// Convertir la cadena de fecha a un objeto tm
 	tm fecha_completa = {};
 	istringstream ss(horario_real);
 	ss >> get_time(&fecha_completa, formato_fecha.c_str());
@@ -181,7 +179,6 @@ int obtener_dia_semana(const string &horario_real)
 	mktime(&fecha_completa);
 	int dia_numero = fecha_completa.tm_wday;
 
-	// Determinar el tipo de día
 	if (dia_numero == 0)
 	{
 		return 3; // Domingo
@@ -233,20 +230,16 @@ int convertir_hmm_a_minutos(const string &horario_hmm)
 	switch (horario_hmm.length())
 	{
 	case 1:
-		// Ejemplo: "1" -> 00:01
 		minutos = stoi(horario_hmm.substr(0, 1));
 		break;
 	case 2:
-		// Ejemplo: "12" -> 00:12
 		minutos = stoi(horario_hmm.substr(0, 2));
 		break;
 	case 3:
-		// Ejemplo: "824" -> 08:24
 		horas = stoi(horario_hmm.substr(0, 1));
 		minutos = stoi(horario_hmm.substr(1, 2));
 		break;
 	case 4:
-		// Ejemplo: "1324" -> 13:24
 		horas = stoi(horario_hmm.substr(0, 2));
 		minutos = stoi(horario_hmm.substr(2, 2));
 		break;
@@ -442,7 +435,7 @@ void procesar_viajes(const string &filename, vector<DataViaje> &data, int start,
 	ifstream file(filename);
 	string line;
 
-	// Ignorar la primera línea del encabezado
+	// Ignorar la primera línea (headers)
 	if (getline(file, line))
 	{
 		// Avanzar hasta el inicio del chunk
@@ -481,7 +474,6 @@ void procesar_viajes(const string &filename, vector<DataViaje> &data, int start,
 	};
 };
 
-// Función para calcular la distancia entre dos puntos UTM
 double calcular_distancia_utm(double x1, double y1, double x2, double y2)
 {
 	return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));

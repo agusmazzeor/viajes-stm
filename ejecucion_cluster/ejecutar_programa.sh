@@ -12,7 +12,7 @@ source ~/miniconda3/bin/activate
 conda activate cpp_env
 module load mpi/mpich-3.2-x86_64
 
-for EJECUCION in 1
+for EJECUCION in 1 2 3 4 5
 do
 	echo "Ejecucion $EJECUCION"
 	make clean

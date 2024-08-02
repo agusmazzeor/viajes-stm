@@ -34,7 +34,6 @@ void serialize_horarios_teoricos(const LineaMap &schedule, string &output)
 	output = ss.str();
 }
 
-// algo[linea][variante][tipo_dia][fecha][recorrido][pos_recorrido][parada]
 void serialize_horarios_teoricos_final(const LineaMapFinal &schedule, string &output)
 {
 	stringstream ss;

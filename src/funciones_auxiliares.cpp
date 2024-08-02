@@ -27,7 +27,6 @@ void guardar_linea_map_en_archivo(const LineaMap &linea_map, const string &filen
 		return;
 	}
 
-	// Escribir los encabezados
 	file << "linea,variante,tipo_dia,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior,coord_este,coord_norte,distancia_parada_anterior" << endl;
 
 	for (const auto &linea : linea_map)
@@ -77,7 +76,6 @@ void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const st
 		return;
 	}
 
-	// Escribir los encabezados
 	file << "linea,variante,tipo_dia,fecha,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior,distancia_parada_anterior" << endl;
 
 	for (const auto &linea : linea_map)
@@ -135,7 +133,6 @@ void guardar_tiempo_de_ejecucion_en_archivo(const int &duration, const int &num_
 
 void print_data_linea(LineaMap &lista_horarios_teoricos_parada)
 {
-	// Imprimir algunos datos para verificar la estructura
 	for (const auto &linea : lista_horarios_teoricos_parada)
 	{
 		cout << "Linea: " << linea.first << endl;

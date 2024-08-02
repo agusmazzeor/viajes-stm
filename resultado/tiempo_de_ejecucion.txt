@@ -1,9 +1,0 @@
------------ 16 gb ram, 5 cores y 5 procesos con 3 meses de viajes------------
-Cant procesos: 5, tiempo de ejecucion (minutos): 3, tipo tiempo: preprocesamiento
-Cant procesos: 5, tiempo de ejecucion (minutos): 14, tipo tiempo: procesamiento
-Cant procesos: 5, tiempo de ejecucion (minutos): 19, tipo tiempo: total
-
------------ 16 gb ram, 8 cores y 8 procesos con 3 meses de viajes------------
-Cant procesos: 4, tiempo de ejecucion (minutos): 0, tipo tiempo: preprocesamiento
-Cant procesos: 4, tiempo de ejecucion (minutos): 0, tipo tiempo: procesamiento
-Cant procesos: 4, tiempo de ejecucion (minutos): 0, tipo tiempo: total
