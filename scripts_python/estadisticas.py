@@ -2,72 +2,161 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np # Import numpy for array manipulation
 
-def generar_plot():
+def porcentajes():
     # Leer el archivo CSV
     df = pd.read_csv('/resultado/retrasos_de_lineas.csv')
 
-    # Agrupar por recorrido y sumar los delays
-    grouped = df.groupby(['linea', 'variante', 'tipo_dia', 'recorrido']).agg({'delay': 'sum'}).reset_index()
+    # Filtrar los datos donde el delay es válido y el tipo de día es 1 (día de la semana)
+    df = df[df['delay'] != -1]
+    df = df[df['tipo_dia'] == 1]
 
-    # Obtener los 3 recorridos con más delay
-    largest_3 = grouped.nlargest(3, 'delay')
+    # Buses que se atrasaron entre 5 y 15 minutos (300-900 segundos)
+    delay_entre_5_y_15 = ((df['delay'] >= 300) & (df['delay'] <= 900)).sum()
+    total_buses = len(df)
+    porcentaje_delay_5_15 = (delay_entre_5_y_15 / total_buses) * 100
 
-    top_recorridos = largest_3['recorrido'].to_list()
-    top_variantes = largest_3['variante'].to_list()
-    tipos_dia = list(set(largest_3['tipo_dia'].to_list()))
+    # Omnibus donde la cantidad de boletos vendidos en la parada anterior es mayor a 5
+    boletos_mayor_5 = (df['cant_pasajeros_parada_anterior'] > 5).sum()
+    porcentaje_boletos_mayor_5 = (boletos_mayor_5 / total_buses) * 100
 
-    # Filtrar el DataFrame original para mantener solo las 3 top variantes
-    df_top = df[df['variante'].isin(top_variantes)]
-    df_top = df_top[df_top['recorrido'].isin(top_recorridos)]
+    # Omnibus donde la distancia con la parada anterior es menor a 200 metros
+    distancia_menor_200 = (df['distancia_parada_anterior'] < 200).sum()
+    porcentaje_distancia_menor_200 = (distancia_menor_200 / total_buses) * 100
 
-    # # Obtener los tipos de día únicos y los recorridos únicos
-    tipos_dia = df['tipo_dia'].unique()
-    # recorridos = df_top['recorrido'].unique()
-    # print(tipos_dia)
-    # print(recorridos)
+    # Graficar los resultados
+    labels = [
+        'Delay 5-15 min',
+        'Boletos > 5',
+        'Distancia < 200 m'
+    ]
+    porcentajes = [
+        porcentaje_delay_5_15,
+        porcentaje_boletos_mayor_5,
+        porcentaje_distancia_menor_200
+    ]
 
-    # Crear una figura y ejes para los gráficos
-    fig, axes = plt.subplots(len(tipos_dia), len(top_recorridos), figsize=(15, 10), sharey=True, sharex=True)
-    fig.suptitle('Delay por Posición del Recorrido para cada Tipo de Día y Recorrido', fontsize=16)
+    plt.figure(figsize=(7, 6))
+    plt.bar(labels, porcentajes, color=['blue', 'green', 'orange'])
+    plt.xlabel('Categoría')
+    plt.ylabel('Porcentaje (%)')
+    plt.title('Porcentaje de Buses en Diferentes Categorías')
+    plt.ylim(0, 15)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.savefig('/resultado/estadisticas/porcentajes.png')
 
-    # Convert axes to a NumPy array for multi-dimensional indexing
-    axes = np.array(axes) 
+def paradas_mas_vendidas_dia_habil():
+    # Leer el archivo CSV
+    df = pd.read_csv('/resultado/retrasos_de_lineas.csv')
 
-    # Reshape axes to 2D if necessary
-    if axes.ndim == 1:
-        axes = axes.reshape(len(tipos_dia), len(top_recorridos))
+    df = df[df['delay'] != -1]
+    tipo_dia = 1
+    df = df[df['tipo_dia'] == tipo_dia]
+    # filtar sacar las paradas que tengan mas de 15 minutos de delay
+    df = df[df['delay'] <= 15*60]
+    # Encontrar los recorridos con más delay en una parada
+    top_recorridos = df.nlargest(200, 'delay')
+    # Si las variantes se repiten en top recorridos, filtrar
+    top_recorridos = top_recorridos.drop_duplicates(subset='variante')
 
-    # Crear un gráfico para cada tipo de día y cada recorrido
-    for i, tipo_dia in enumerate(tipos_dia):
-        for j, recorrido in enumerate(top_recorridos):
-            ax = axes[i, j]  # Now you can index with a tuple
-            
-            subset = df[(df['tipo_dia'] == tipo_dia) & (df['recorrido'] == recorrido) & (df['variante'].isin(top_variantes))]
-            subset = subset[subset['delay'] != -1]
+    # Ordenar los datos para los gráficos
+    sorted_top_paradas = top_recorridos.sort_values('parada', ascending=False)
 
-            if not subset.empty: 
-                ax.plot(subset['pos_recorrido'], subset['delay'], marker='o', linestyle='-')
-            linea = subset['linea'].unique()
-            if len(linea) > 0:
-                linea = linea[0]
-            else:
-                linea = ''
+    # Gráfico 1: Cantidad de boletos vendidos en la parada anterior
+    plt.figure(figsize=(7, 6))
+    plt.bar(sorted_top_paradas['parada'].astype(str), sorted_top_paradas['cant_pasajeros_parada_anterior'], color='g')
+    plt.title('Boletos vendidos en la parada anterior en los recorridos con mayor retraso días hábiles')
+    plt.xlabel('Parada del recorrido específico (Línea - Recorrido - Fecha - Parada)')
+    plt.ylabel('Boletos vendidos parada anterior')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('/resultado/estadisticas/habil_boletos_parada_anterior.png')
 
-            variante = subset['variante'].unique()
-            if len(variante) > 0:
-                variante = variante[0]
-            else:
-                variante = ''
+    # Gráfico 2: Retrasos en la parada
+    plt.figure(figsize=(7, 6))
+    plt.bar(sorted_top_paradas['parada'].astype(str), sorted_top_paradas['delay'], color='r')
+    plt.title('Retraso en la parada actual en los recorridos con mayor retraso días hábiles')
+    plt.xlabel('Parada del recorrido específico (Línea - Recorrido - Fecha - Parada)')
+    plt.ylabel('Retraso en parada actual')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('/resultado/estadisticas/habil_retraso_parada.png')
 
-            ax.set_title(f'Tipo de Día {tipo_dia}, Recorrido {recorrido}, Linea {linea}, Variante {variante}')
-            ax.set_xlabel('Posición del Recorrido')
-            ax.set_ylabel('Delay')
+    # Gráfico 3: Retrasos en la parada anterior
+    plt.figure(figsize=(7, 6))
+    plt.bar(sorted_top_paradas['parada'].astype(str), sorted_top_paradas['retraso_parada_anterior'], color='r')
+    plt.title('Retrasos en la parada anterior días hábiles')
+    plt.xlabel('Parada del recorrido específico (Línea - Recorrido - Fecha - Parada)')
+    plt.ylabel('Retraso parada anterior')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('/resultado/estadisticas/habil_retraso_parada_anterior.png')
 
-    # Ajustar el layout
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    plt.savefig('/resultado/estadisticas/delay_por_posicion.png')
-    plt.show()
+    # Gráfico 4: Distancia a la parada anterior
+    plt.figure(figsize=(7, 6))
+    plt.bar(sorted_top_paradas['parada'].astype(str), sorted_top_paradas['distancia_parada_anterior'], color='orange')
+    plt.title('Distancia a la Parada Anterior días hábiles')
+    plt.xlabel('Parada del recorrido específico (Línea - Recorrido - Fecha - Parada)')
+    plt.ylabel('Distancia a la parada anterior')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('/resultado/estadisticas/habil_distancia_con_parada_anterior.png')
 
+def paradas_mas_vendidas_sabado():
+    # Leer el archivo CSV
+    df = pd.read_csv('/resultado/retrasos_de_lineas.csv')
+
+    df = df[df['delay'] != -1]
+    tipo_dia = 2
+    df = df[df['tipo_dia'] == tipo_dia]
+    df = df[df['delay'] <= 15*60]
+    top_recorridos = df.nlargest(200, 'delay')
+    top_recorridos = top_recorridos.drop_duplicates(subset='variante')
+
+    # Ordenar los datos para los gráficos
+    sorted_top_paradas = top_recorridos.sort_values('parada', ascending=False)
+
+    # Gráfico 1: Cantidad de boletos vendidos en la parada anterior
+    plt.figure(figsize=(7, 6))
+    plt.bar(sorted_top_paradas['parada'].astype(str), sorted_top_paradas['cant_pasajeros_parada_anterior'], color='g')
+    plt.title('Boletos vendidos en la parada anterior en los recorridos con mayor retraso día Sábado')
+    plt.xlabel('Parada del recorrido específico (Línea - Recorrido - Fecha - Parada)')
+    plt.ylabel('Boletos vendidos parada anterior')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('/resultado/estadisticas/sabado_boletos_parada_anterior.png')
+
+    # Gráfico 2: Retrasos en la parada
+    plt.figure(figsize=(7, 6))
+    plt.bar(sorted_top_paradas['parada'].astype(str), sorted_top_paradas['delay'], color='r')
+    plt.title('Retraso en la parada actual en los recorridos con mayor retraso día Sábado')
+    plt.xlabel('Parada del recorrido específico (Línea - Recorrido - Fecha - Parada)')
+    plt.ylabel('Retraso en parada actual')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('/resultado/estadisticas/sabado_retraso_parada.png')
+
+    # Gráfico 3: Retrasos en la parada anterior
+    plt.figure(figsize=(7, 6))
+    plt.bar(sorted_top_paradas['parada'].astype(str), sorted_top_paradas['retraso_parada_anterior'], color='r')
+    plt.title('Retrasos en la parada anterior día Sábado')
+    plt.xlabel('Parada del recorrido específico (Línea - Recorrido - Fecha - Parada)')
+    plt.ylabel('Retraso parada anterior')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('/resultado/estadisticas/sabado_retraso_parada_anterior.png')
+
+    # Gráfico 4: Distancia a la parada anterior
+    plt.figure(figsize=(7, 6))
+    plt.bar(sorted_top_paradas['parada'].astype(str), sorted_top_paradas['distancia_parada_anterior'], color='orange')
+    plt.title('Distancia a la Parada Anterior día Sábado')
+    plt.xlabel('Parada del recorrido específico (Línea - Recorrido - Fecha - Parada)')
+    plt.ylabel('Distancia a la parada anterior')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('/resultado/estadisticas/sabado_distancia_con_parada_anterior.png')
 
 if __name__ == "__main__":
-    generar_plot()
+    porcentajes()
+    paradas_mas_vendidas_dia_habil()
+    paradas_mas_vendidas_sabado()
