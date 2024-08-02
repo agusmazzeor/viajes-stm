@@ -172,8 +172,8 @@ int main(int argc, char *argv[])
 
     // Parar el temporizador
     auto end_time = high_resolution_clock::now();
-    auto duration = duration_cast<minutes>(end_time - start_time);
-    cout << "Tiempo de ejecución total: " << duration.count() << " minutos, cant procesos: " << size << endl;
+    auto duration = duration_cast<seconds>(end_time - start_time);
+    cout << "Tiempo de ejecución total: " << duration.count() / 60 << " minutos, cant procesos: " << size << endl;
     guardar_tiempo_de_ejecucion_en_archivo(duration.count(), size, "resultado/tiempo_de_ejecucion.txt", "total");
   }
   else

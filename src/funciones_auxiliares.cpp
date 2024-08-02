@@ -129,7 +129,7 @@ void guardar_tiempo_de_ejecucion_en_archivo(const int &duration, const int &num_
 		return;
 	}
 
-	file << "Cant procesos: " << num_processes << ", tiempo de ejecucion (minutos): " << duration << ", tipo tiempo: " << tipo_tiempo << endl;
+	file << "Cantidad procesos: " << num_processes << ", tiempo de ejecucion en segundos: " << duration << " (" << duration / 60 << " minutos), tipo tiempo: " << tipo_tiempo << endl;
 	file.close();
 }
 
