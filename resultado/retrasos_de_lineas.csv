@@ -1,4 +1,4 @@
-linea,variante,tipo_dia,fecha,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior,coord_este,coord_norte,distancia_parada_anterior
-144,8872,3,20240419,3453,11111,15,4,1,956,0,-1,0,577981,6.14077e+06,0
-144,8872,3,20240419,3456,11111,16,609,1,1010,0,4,1,577927,6.14084e+06,88.4081
-144,8872,3,20240419,3456,22222,15,2,2,2059,0,-1,0,577927,6.14084e+06,0
+linea,variante,tipo_dia,fecha,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior,distancia_parada_anterior
+144,8872,3,20240419,3453,11111,15,4,1,956,0,-1,0,0
+144,8872,3,20240419,3456,11111,16,609,1,1010,0,4,1,88.4081
+144,8872,3,20240419,3456,22222,15,2,2,2059,0,-1,0,0

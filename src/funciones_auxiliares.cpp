@@ -78,7 +78,7 @@ void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const st
 	}
 
 	// Escribir los encabezados
-	file << "linea,variante,tipo_dia,fecha,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior,coord_este,coord_norte,distancia_parada_anterior" << endl;
+	file << "linea,variante,tipo_dia,fecha,parada,recorrido,pos_recorrido,delay,cant_boletos,horario,arranco_dia_anterior,retraso_parada_anterior,cant_pasajeros_parada_anterior,distancia_parada_anterior" << endl;
 
 	for (const auto &linea : linea_map)
 	{
@@ -108,8 +108,6 @@ void guardar_linea_map_final_en_archivo(const LineaMapFinal &linea_map, const st
 										 << horario.arranco_dia_anterior << ","
 										 << horario.retraso_acumulado << ","
 										 << horario.cant_pasajeros_parada_anterior << ","
-										 << horario.coord_este << ","
-										 << horario.coord_norte << ","
 										 << horario.distancia_parada_anterior << endl;
 							}
 						}
